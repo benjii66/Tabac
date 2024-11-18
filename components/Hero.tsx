@@ -6,7 +6,7 @@ export default function Hero() {
   return (
     <section className="relative h-[80vh] w-full">
       <Image
-        src="/shop-front.jpg"
+        src="/assets/images/devanture.jpg"
         alt="Tabac Le Soler Shop Front"
         fill
         className="object-cover brightness-75"
@@ -20,18 +20,22 @@ export default function Hero() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <Image
-              src="/logo.png"
-              alt="Tabac Le Soler Logo"
-              width={200}
-              height={200}
-              className="mx-auto mb-8"
-            />
-            <h1 className="text-5xl font-bold mb-4">Tabac Le Soler</h1>
-            <p className="text-xl">Votre bureau de tabac de confiance</p>
+            <h1 className="text-5xl font-bold mb-4">Tabac Presse Le Soler</h1>
+            <p className="text-xl">Le choix et la proximité, c'est ici !</p>
           </motion.div>
         </div>
       </div>
     </section>
   );
 }
+
+
+
+
+// autres catch phrase : "Le rendez-vous convivial de votre quotidien !"
+// "Votre tabac presse, au cœur de vos besoins."
+// "Plus qu’un bureau de tabac : un service avec le sourire."
+// "Ici, tout commence par un bon accueil."
+// "Le choix et la proximité, c’est ici !"
+// "Votre tabac presse, un service qui compte pour vous."
+// "L’essentiel de votre quotidien, à portée de main."

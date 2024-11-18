@@ -8,14 +8,14 @@ import 'swiper/css/pagination';
 
 const services = [
   {
-    title: 'Tabac',
-    description: 'Large sélection de produits de tabac',
-    image: '/tobacco.jpg'
+    title: 'CBD',
+    description: 'Large sélection de produits de CBD',
+    image: '/assets/images/CBD.jpg'
   },
   {
-    title: 'Loto & Jeux',
-    description: 'Française des Jeux, tickets à gratter',
-    image: '/lotto.jpg'
+    title: 'Maroquinerie',
+    description: 'Des potis sacs à mains et accessoires',
+    image: '/assets/images/maroquinerie.jpg'
   },
   {
     title: 'PMU',

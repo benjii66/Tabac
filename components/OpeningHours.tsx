@@ -3,12 +3,12 @@ import { motion } from 'framer-motion';
 import { FaClock } from 'react-icons/fa';
 
 const hours = [
-  { day: 'Lundi', hours: '7h00 - 19h30' },
-  { day: 'Mardi', hours: '7h00 - 19h30' },
-  { day: 'Mercredi', hours: '7h00 - 19h30' },
-  { day: 'Jeudi', hours: '7h00 - 19h30' },
-  { day: 'Vendredi', hours: '7h00 - 19h30' },
-  { day: 'Samedi', hours: '8h00 - 19h00' },
+  { day: 'Lundi', hours: '7h00 - 19h00' },
+  { day: 'Mardi', hours: '7h00 - 19h00' },
+  { day: 'Mercredi', hours: '7h00 - 19h00' },
+  { day: 'Jeudi', hours: '7h00 - 19h00' },
+  { day: 'Vendredi', hours: '7h00 - 19h00' },
+  { day: 'Samedi', hours: '7h00-12h30 -> 14h30-19h00' },
   { day: 'Dimanche', hours: '8h00 - 12h30' },
 ];
 
