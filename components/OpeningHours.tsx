@@ -37,8 +37,13 @@ export default function OpeningHours() {
                 transition={{ delay: index * 0.1 }}
                 className="flex justify-between text-sm sm:text-base py-2 border-b border-gray-200 last:border-0"
               >
-                <span className="font-medium text-gray-800">{item.day}</span>
-                <span className="text-gray-600">{item.hours}</span>
+                <span className={`font-medium ${document.body.classList.contains('night-mode') ? 'text-white' : 'text-gray-800'}`}>
+                  {item.day}
+                </span>
+                <span className={`text-sm ${document.body.classList.contains('night-mode') ? 'text-white' : 'text-gray-600'}`}>
+                  {item.hours}
+                </span>
+
               </motion.div>
             ))}
           </div>

@@ -56,8 +56,6 @@ body {
   }
 }
 
-
-
 /* Mode Contraste élevé */
 .high-contrast {
   background-color: black !important;
@@ -68,12 +66,102 @@ body {
   color: cyan !important;
 }
 
+
+
 /* Mode Nuit */
 .night-mode {
-  background-color: #121212 !important;
-  color: #e0e0e0 !important;
+  background-color: #000 !important;
+  /* Fond noir */
+  color: #FFF !important;
+  /* Texte blanc */
 }
 
+.night-mode,
+.night-mode * {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+
+/* Liens visibles en mode nuit */
 .night-mode a {
-  color: #bb86fc !important;
+  color: #1E90FF !important;
+  /* Bleu clair */
+  text-decoration: underline;
+  /* Liens plus visibles */
+}
+
+/* Images avec légère réduction de luminosité */
+.night-mode img {
+  filter: brightness(0.8);
+  /* Réduit un peu la luminosité */
+}
+
+/* Arrière-plan des sections */
+.night-mode section,
+.night-mode header,
+.night-mode footer {
+  background-color: #121212 !important;
+  /* Fond gris foncé pour sections */
+}
+
+/* Boutons en mode nuit */
+.night-mode button {
+  background-color: #333 !important;
+  /* Boutons gris foncé */
+  color: #FFF !important;
+  /* Texte des boutons blanc */
+  border: 1px solid #555;
+  /* Bordure gris clair */
+}
+
+.night-mode button:hover {
+  background-color: #444 !important;
+  /* Légèrement plus clair au survol */
+}
+
+/* Applique un texte blanc par défaut à tous les éléments en Mode Nuit */
+.night-mode {
+  color: #FFF !important;
+  /* Texte blanc partout */
+}
+
+/* Applique à toutes les balises de texte (p, span, h1, etc.) */
+.night-mode p,
+.night-mode span,
+.night-mode h1,
+.night-mode h2,
+.night-mode h3,
+.night-mode h4,
+.night-mode h5,
+.night-mode h6,
+.night-mode li {
+  color: #FFF !important;
+  /* Forcer le texte blanc */
+}
+
+/* Pour les textes dans les conteneurs spécifiques comme les horaires */
+.night-mode .opening-hours,
+.night-mode .text-gray-800,
+.night-mode .text-gray-600 {
+  color: #FFF !important;
+  /* Texte blanc sur fond noir */
+}
+
+/* Assurez que les bordures restent visibles */
+.night-mode .border-gray-200 {
+  border-color: #555 !important;
+  /* Bordure plus claire */
+}
+
+/* Si certains textes sont sur fond sombre, change les backgrounds */
+.night-mode .bg-stone-50 {
+  background-color: #121212 !important;
+  /* Fond gris foncé */
+}
+
+/* Pour les boutons ou autres éléments dynamiques */
+.night-mode button {
+  color: #FFF !important;
+  background-color: #333 !important;
+  /* Bouton sombre */
 }

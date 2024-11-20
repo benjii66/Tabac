@@ -1,5 +1,10 @@
 "use client";
 
+// ACHTUNG
+// aggrandir les placeholders d'images de services
+
+
+
 import { useEffect, useState } from "react";
 import ServicesMobile from "./ServicesMobile";
 import ServicesDesktop from "./ServicesDesktop";
@@ -36,3 +41,6 @@ export default function Services() {
     </section>
   );
 }
+
+
+
