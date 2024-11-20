@@ -1,10 +1,9 @@
-
 export default function Footer() {
     return (
         <footer className="bg-black text-white py-10">
             <div className="container mx-auto px-4">
                 {/* Conteneur principal */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6 items-center">
                     {/* Colonne 1 : Nom et slogan */}
                     <div className="text-center md:text-left">
                         <h2 className="text-2xl font-bold">Tabac Presse Le Soler</h2>
@@ -15,24 +14,24 @@ export default function Footer() {
 
                     {/* Colonne 2 : Mentions légales */}
                     <div className="text-center">
-                        <ul className="flex justify-center space-x-6">
-                            <li>
-                                <a
-                                    href="/mentions-legales"
-                                    className="text-sm text-gray-400 hover:text-white transition"
-                                >
-                                    Mentions légales
-                                </a>
+                        <a
+                            href="/mentions-legales"
+                            className="text-sm text-gray-400 hover:text-white transition"
+                        >
+                            Mentions légales
+                        </a>
+                    </div>
+
+                    {/* Colonne 3 : Coordonnées */}
+                    <div className="text-left">
+                        <ul className="inline-block space-y-1 text-sm">
+                            <li className="whitespace-nowrap">46 rue des Orangers, 66270 Le Soler</li>
+                            <li className="whitespace-nowrap">
+                                Téléphone : <a href="tel:0468297856" className="hover:text-blue-400 transition">04 68 29 78 56</a>
                             </li>
                         </ul>
                     </div>
 
-                    {/* Colonne 3 : Coordonnées */}
-                    <div className="text-center md:text-right">
-                        <p>46 rue des Orangers, 66270 Le Soler</p>
-                        <p>Téléphone : 04 68 29 78 56</p>
-                        <p>Horaires : 7h - 19h</p>
-                    </div>
                 </div>
 
                 {/* Réseaux sociaux */}
@@ -43,7 +42,7 @@ export default function Footer() {
                                 <img
                                     src="/assets/logo/facebook.png"
                                     alt="Facebook"
-                                    className="w-6 h-6"
+                                    className="w-6 h-6 hover:scale-110 transition-transform"
                                 />
                             </a>
                         </li>
@@ -52,18 +51,16 @@ export default function Footer() {
                                 <img
                                     src="/assets/logo/instagram.png"
                                     alt="Instagram"
-                                    className="w-6 h-6"
+                                    className="w-6 h-6 hover:scale-110 transition-transform"
                                 />
                             </a>
                         </li>
                     </ul>
                 </div>
 
-                {/* Copyright et réalisé par */}
+                {/* Copyright */}
                 <div className="mt-8 text-center text-sm text-gray-400">
-                    © {new Date().getFullYear()} Tabac Presse Le Soler. Tous droits réservés.
-                    <br />
-                    Fièrement réalisé par <span className="text-white font-bold">Ton Prénom Nom</span>.
+                    © {new Date().getFullYear()} Tabac Presse Le Soler | Créé avec💖à Le Soler.
                 </div>
             </div>
         </footer>
