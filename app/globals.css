@@ -14,3 +14,27 @@
 body {
   @apply text-gray-800;
 }
+
+.dyslexia-font {
+  font-family: "OpenDyslexic", sans-serif !important;
+}
+
+/* Mode Contraste élevé */
+.high-contrast {
+  background-color: black !important;
+  color: yellow !important;
+}
+
+.high-contrast a {
+  color: cyan !important;
+}
+
+/* Mode Nuit */
+.night-mode {
+  background-color: #121212 !important;
+  color: #e0e0e0 !important;
+}
+
+.night-mode a {
+  color: #bb86fc !important;
+}

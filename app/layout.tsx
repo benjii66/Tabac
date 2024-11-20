@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import AccessibilityMenu from '@/components/AccessibilityMenu'; // Importe le composant AccessibilityMenu
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,7 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        <AccessibilityMenu /> {/* Ajout du composant Accessibilité */}
+      </body>
     </html>
   );
 }
