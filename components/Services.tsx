@@ -20,14 +20,29 @@ const services = [
     image: '/assets/images/maroquinerie.jpg',
   },
   {
-    title: 'PMU',
-    description: 'Paris hippiques et sportifs',
-    image: '/assets/images/pmu.jpg',
+    title: 'Magasin',
+    description: 'Rayons spacieux',
+    image: '/assets/images/magas1.jpg',
   },
   {
     title: 'Presse',
     description: 'Journaux et magazines',
-    image: '/assets/images/press.jpg',
+    image: '/assets/images/presse.jpg',
+  },
+  {
+    title: 'Produits Locaux',
+    description: 'Produits Locaux et de la Région',
+    image: '/assets/images/prodLoc.jpg',
+  },
+  {
+    title: 'Cigarettes Electroniques',
+    description: 'Produits e-cigarettes',
+    image: '/assets/images/ecig.jpg',
+  },
+  {
+    title: 'Boissons',
+    description: 'A boire et ça repart',
+    image: '/assets/images/Frigo.jpg',
   },
 ];
 
@@ -53,9 +68,9 @@ export default function Services() {
           centeredSlides={true}
           slidesPerView="auto"
           coverflowEffect={{
-            rotate: 50,
-            stretch: 0,
-            depth: 100,
+            rotate: 30,
+            stretch: 20, // Ajout d'un léger espacement
+            depth: 120,
             modifier: 1,
             slideShadows: true,
           }}
@@ -68,24 +83,33 @@ export default function Services() {
           className="w-full py-8"
         >
           {services.map((service, index) => (
-            <SwiperSlide key={index} className="w-80 h-80">
-              {/* Slide avec image et contenu */}
+            <SwiperSlide
+              key={index}
+              className="flex justify-center items-center" // Ne touche pas aux dimensions globales
+              style={{
+                width: '20vw', // Largeur de chaque slide : 25% de l'écran
+                height: '30vh', // Hauteur de chaque slide : 35% de l'écran
+              }}
+            >
+              {/* Slide avec bordure subtile */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.5 }}
-                className="relative w-full h-full rounded-lg overflow-hidden shadow-lg"
+                className="relative w-full h-full rounded-lg overflow-hidden border border-gray-200 shadow-sm"
               >
                 <img
-                  src={service.image || '/assets/images/placeholder.jpg'} // Placeholder en cas d'image manquante
+                  src={service.image || '/assets/images/placeholder.jpg'}
                   alt={service.title}
-                  className="w-full h-full object-cover object-center"
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6 text-white">
-                  <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
+                <div className="absolute inset-0 flex flex-col justify-center items-center text-center bg-gradient-to-t from-black/20 to-black/10 text-white p-3">
+                  <h3 className="text-lg font-bold mb-1">{service.title}</h3>
                   <p className="text-sm">{service.description}</p>
                 </div>
               </motion.div>
+
             </SwiperSlide>
           ))}
         </Swiper>
