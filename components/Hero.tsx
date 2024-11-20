@@ -20,12 +20,17 @@ export default function Hero() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h1 className="text-5xl font-bold mb-4">Tabac Presse Le Soler</h1>
-            <p className="text-xl">Le choix et la proximité, c'est ici !</p>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
+              Tabac Presse Le Soler
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl">
+              Le choix et la proximité, c'est ici !
+            </p>
           </motion.div>
         </div>
       </div>
     </section>
+
   );
 }
 

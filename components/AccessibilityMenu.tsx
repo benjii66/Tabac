@@ -45,10 +45,11 @@ export default function AccessibilityMenu() {
 
             {/* Menu d'accessibilité */}
             <div
-                className={`fixed top-0 right-0 w-80 h-full bg-black text-white shadow-lg transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed top-0 right-0 h-full bg-black text-white shadow-lg transform ${isMenuOpen ? "translate-x-0" : "translate-x-full"
                     } transition-transform duration-300`}
+                style={{ width: "80%", maxWidth: "320px" }} // Ajustement responsive
             >
-                <div className="p-6">
+                <div className="p-4">
                     <h2 className="text-xl font-bold mb-4">Accessibilité</h2>
                     <p className="text-sm mb-6">Adaptez ce site selon vos besoins.</p>
 
@@ -56,28 +57,28 @@ export default function AccessibilityMenu() {
                         <li>
                             <button
                                 onClick={toggleDyslexiaFont}
-                                className={`w-full text-left p-3 rounded transition ${isDyslexiaActive ? 'bg-white text-blue-900' : 'bg-gray-800 hover:bg-gray-700 text-white'
+                                className={`w-full text-left p-3 rounded transition ${isDyslexiaActive ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'
                                     }`}
                             >
-                                {isDyslexiaActive ? 'Désactiver Dyslexie' : 'Activer Dyslexie'}
+                                Activer Dyslexie
                             </button>
                         </li>
                         <li>
                             <button
                                 onClick={toggleHighContrast}
-                                className={`w-full text-left p-3 rounded transition ${isHighContrastActive ? 'bg-blue-200 text-blue-800' : 'bg-gray-800 hover:bg-gray-700 text-white'
+                                className={`w-full text-left p-3 rounded transition ${isHighContrastActive ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'
                                     }`}
                             >
-                                {isHighContrastActive ? 'Désactiver Contraste élevé' : 'Activer Contraste élevé'}
+                                Activer Contraste élevé
                             </button>
                         </li>
                         <li>
                             <button
                                 onClick={toggleNightMode}
-                                className={`w-full text-left p-3 rounded transition ${isNightModeActive ? 'bg-blue-200 text-blue-800' : 'bg-gray-800 hover:bg-gray-700 text-white'
+                                className={`w-full text-left p-3 rounded transition ${isNightModeActive ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'
                                     }`}
                             >
-                                {isNightModeActive ? 'Désactiver Mode Nuit' : 'Activer Mode Nuit'}
+                                Activer Mode Nuit
                             </button>
                         </li>
                     </ul>

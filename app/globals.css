@@ -33,6 +33,29 @@ body {
 
 }
 
+.fixed-menu {
+  width: 80%;
+  /* Ajuste la largeur pour mobile */
+  max-width: 320px;
+  /* Limite la largeur à un maximum */
+}
+
+.accessibility-button {
+  padding: 0.5rem 1rem;
+  /* Réduit le padding pour un design compact */
+  margin-bottom: 1rem;
+  /* Ajoute un espacement entre les boutons */
+  font-size: 0.9rem;
+  /* Réduit légèrement la taille du texte */
+}
+
+@media (max-width: 768px) {
+  .fixed-menu {
+    width: 90%;
+    /* Plus compact sur mobile */
+  }
+}
+
 
 
 /* Mode Contraste élevé */

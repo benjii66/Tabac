@@ -14,7 +14,7 @@ const hours = [
 
 export default function OpeningHours() {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-12 sm:py-16 bg-white">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0 }}
@@ -24,16 +24,18 @@ export default function OpeningHours() {
         >
           <div className="flex items-center justify-center gap-2 mb-8">
             <FaClock className="text-red-600 text-2xl" />
-            <h2 className="text-3xl font-bold text-gray-800">Horaires d'ouverture</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+              Horaires d'ouverture
+            </h2>
           </div>
-          <div className="bg-stone-50 rounded-lg p-6 shadow-lg">
+          <div className="bg-stone-50 rounded-lg p-4 sm:p-6 shadow-lg">
             {hours.map((item, index) => (
               <motion.div
                 key={item.day}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="flex justify-between py-3 border-b border-gray-200 last:border-0"
+                className="flex justify-between text-sm sm:text-base py-2 border-b border-gray-200 last:border-0"
               >
                 <span className="font-medium text-gray-800">{item.day}</span>
                 <span className="text-gray-600">{item.hours}</span>
@@ -43,5 +45,6 @@ export default function OpeningHours() {
         </motion.div>
       </div>
     </section>
+
   );
 }
