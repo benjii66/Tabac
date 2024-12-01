@@ -88,6 +88,8 @@ export default function ServicesDesktop() {
                         <Image
                             src={service.image || "/assets/images/placeholder.jpg"}
                             alt={`${service.title} - ${service.description}`}
+                            width={400}
+                            height={400}
                             className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 flex flex-col justify-center items-center text-center bg-gradient-to-t from-black/50 to-black/20 text-white p-3">
