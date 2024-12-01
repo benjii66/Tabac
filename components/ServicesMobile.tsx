@@ -86,7 +86,7 @@ export default function ServicesMobile() {
                     >
                         <img
                             src={service.image || "/assets/images/placeholder.jpg"}
-                            alt={service.title}
+                            alt={`${service.title} - ${service.description}`} // SEO amélioré
                             className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 flex flex-col justify-center items-center text-center bg-gradient-to-t from-black/20 to-black/10 text-white p-3">
