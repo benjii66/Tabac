@@ -37,51 +37,84 @@ export default function AccessibilityMenu() {
             <div className="fixed bottom-4 right-4 z-50">
                 <button
                     onClick={toggleAccessibilityMenu}
+                    aria-label={isMenuOpen ? "Fermer le menu d'accessibilité" : "Ouvrir le menu d'accessibilité"}
                     className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
                 >
-                    <img src="/assets/logo/eye.ico" alt="Accessibilité" className="w-6 h-6" />
+                    <img
+                        src="/assets/logo/eye.ico"
+                        alt="Icône menu d'accessibilité"
+                        className="w-6 h-6"
+                    />
                 </button>
             </div>
 
             {/* Menu d'accessibilité */}
             <div
-                className={`fixed top-0 right-0 h-full bg-black text-white shadow-lg transform ${isMenuOpen ? "translate-x-0" : "translate-x-full"
+                className={`fixed top-0 right-0 h-full bg-black text-white shadow-lg transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
                     } transition-transform duration-300`}
-                style={{ width: "80%", maxWidth: "320px" }} // Ajustement responsive
+                style={{ width: '80%', maxWidth: '320px' }} // Ajustement responsive
             >
                 <div className="p-4">
                     <h2 className="text-xl font-bold mb-4">Accessibilité</h2>
-                    <p className="text-sm mb-6">Adaptez ce site selon vos besoins.</p>
+                    <p className="text-sm mb-6">
+                        Adaptez ce site selon vos besoins.
+                    </p>
 
                     <ul className="space-y-4">
                         <li>
                             <button
                                 onClick={toggleDyslexiaFont}
-                                className={`w-full text-left p-3 rounded transition ${isDyslexiaActive ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'
+                                className={`w-full text-left p-3 rounded transition ${isDyslexiaActive
+                                        ? 'bg-white text-blue-400'
+                                        : 'bg-gray-800 hover:bg-gray-700 text-white'
                                     }`}
+                                aria-pressed={isDyslexiaActive}
                             >
-                                Activer Dyslexie
+                                {isDyslexiaActive
+                                    ? 'Désactiver la police Dyslexie'
+                                    : 'Activer la police Dyslexie'}
                             </button>
                         </li>
                         <li>
                             <button
                                 onClick={toggleHighContrast}
-                                className={`w-full text-left p-3 rounded transition ${isHighContrastActive ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'
+                                className={`w-full text-left p-3 rounded transition ${isHighContrastActive
+                                        ? 'bg-white text-blue-400'
+                                        : 'bg-gray-800 hover:bg-gray-700 text-white'
                                     }`}
+                                aria-pressed={isHighContrastActive}
                             >
-                                Activer Contraste élevé
+                                {isHighContrastActive
+                                    ? 'Désactiver le Contraste élevé'
+                                    : 'Activer le Contraste élevé'}
                             </button>
                         </li>
                         <li>
                             <button
                                 onClick={toggleNightMode}
-                                className={`w-full text-left p-3 rounded transition ${isNightModeActive ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'
+                                className={`w-full text-left p-3 rounded transition ${isNightModeActive
+                                        ? 'bg-white text-blue-400'
+                                        : 'bg-gray-800 hover:bg-gray-700 text-white'
                                     }`}
+                                aria-pressed={isNightModeActive}
                             >
-                                Activer Mode Nuit
+                                {isNightModeActive
+                                    ? 'Désactiver le Mode Nuit'
+                                    : 'Activer le Mode Nuit'}
                             </button>
                         </li>
                     </ul>
+                </div>
+
+                {/* Ajout d'un bouton pour fermer le menu */}
+                <div className="text-center mt-6">
+                    <button
+                        onClick={toggleAccessibilityMenu}
+                        className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+                        aria-label="Fermer le menu d'accessibilité"
+                    >
+                        Fermer le menu
+                    </button>
                 </div>
             </div>
         </>
