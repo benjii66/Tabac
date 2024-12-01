@@ -73,8 +73,8 @@ export default function ServicesMobile() {
                     key={index}
                     className="flex justify-center items-center"
                     style={{
-                        width: "85%", // Largeur réduite pour mobile
-                        height: "40vh", // Hauteur ajustée pour mobile
+                        width: "85%", 
+                        height: "40vh", 
                     }}
                 >
                     <motion.div

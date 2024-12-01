@@ -55,8 +55,8 @@ export default function ServicesDesktop() {
             slidesPerView="auto"
             coverflowEffect={{
                 rotate: 20,
-                stretch: 50, // Augmente la séparation entre les images
-                depth: 150, // Plus de profondeur
+                stretch: 50, 
+                depth: 150, 
                 modifier: 1,
                 slideShadows: true,
             }}
@@ -73,8 +73,8 @@ export default function ServicesDesktop() {
                     key={index}
                     className="flex justify-center items-center"
                     style={{
-                        width: "30vw", // Augmente la largeur
-                        height: "40vh", // Augmente la hauteur
+                        width: "30vw", 
+                        height: "40vh", 
                     }}
                 >
                     <motion.div
