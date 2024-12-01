@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function MentionsLegales() {
-    const router = useRouter(); // Utilise le hook pour naviguer
+    const router = useRouter();
 
     return (
         <main className="bg-stone-50 text-gray-800 min-h-screen py-10 px-6">
@@ -17,8 +17,9 @@ export default function MentionsLegales() {
                 {/* Bouton de retour */}
                 <div className="text-center mb-8">
                     <button
-                        onClick={() => router.push('/')} // Retour à la page d'accueil
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                        onClick={() => router.push('/')}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        aria-label="Retourner à la page d'accueil"
                     >
                         Retour à l'accueil
                     </button>
@@ -39,17 +40,19 @@ export default function MentionsLegales() {
                         <a
                             href="tel:0468297856"
                             className="text-blue-600 hover:underline"
+                            aria-label="Appeler le Tabac Presse Le Soler"
                         >
                             04 68 29 78 56
                         </a>
                     </p>
                     <p className="text-lg">
-                        <strong className="font-semibold">Réalise avec💖par :</strong>{' '}
+                        <strong className="font-semibold">Réalisation :</strong>{' '}
                         <a
                             href="https://www.linkedin.com/in/benjamiinsimon/"
                             target="_blank"
                             rel="noreferrer"
                             className="text-blue-600 hover:underline"
+                            aria-label="Visiter le profil LinkedIn de Simon Benjamin"
                         >
                             Simon Benjamin
                         </a>
@@ -62,7 +65,7 @@ export default function MentionsLegales() {
 
                 {/* Footer des mentions légales */}
                 <div className="mt-8 text-center text-sm text-gray-500">
-                    Ces mentions légales sont conformes aux exigences légales en vigueur. <br /> Merci de votre visite et à bientôt !
+                    Ces mentions légales respectent les exigences légales en vigueur. <br /> Merci de votre visite et à bientôt !
                 </div>
             </div>
         </main>

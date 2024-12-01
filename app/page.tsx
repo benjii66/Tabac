@@ -7,11 +7,27 @@ import Services from '@/components/Services';
 import MapSection from '@/components/MapSection';
 import Footer from '@/components/Footer';
 import AccessibilityMenu from '@/components/AccessibilityMenu';
+import Head from 'next/head';
 
 export default function Home() {
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Tabac Presse Le Soler",
+    "description": "Votre bureau de tabac à Le Soler : Tabac, Loto, PMU et services de proximité.",
+    "url": "https://tabac-le-soler.com"
+  };
+
   return (
     <main className="flex min-h-screen flex-col bg-stone-50">
 
+      <Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </Head>
       <AccessibilityMenu />
 
       <motion.div

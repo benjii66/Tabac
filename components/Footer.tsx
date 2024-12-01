@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
     return (
         <footer className="bg-black text-white py-8">
@@ -16,12 +18,12 @@ export default function Footer() {
                     <div className="md:text-center">
                         <ul className="space-y-1">
                             <li>
-                                <a
-                                    href="#"
-                                    className="text-sm text-gray-400 hover:text-blue-400 transition"
-                                >
+                                <Link
+                                    href="/mentions-legales"
+                                    className="text-sm text-gray-400 hover:text-blue-400 transition">
                                     Mentions légales
-                                </a>
+
+                                </Link>
                             </li>
                         </ul>
                     </div>
@@ -35,6 +37,7 @@ export default function Footer() {
                                 <a
                                     href="tel:0468297856"
                                     className="hover:text-blue-400 transition"
+                                    aria-label="Appelez le Tabac Presse Le Soler au 04 68 29 78 56"
                                 >
                                     04 68 29 78 56
                                 </a>
@@ -51,10 +54,11 @@ export default function Footer() {
                                 href="https://www.facebook.com/p/Tabac-presse-Le-Soler-100057636871519/?locale=fr_FR"
                                 target="_blank"
                                 rel="noreferrer"
+                                aria-label="Visitez notre page Facebook"
                             >
                                 <img
                                     src="/assets/logo/facebook.png"
-                                    alt="Facebook"
+                                    alt="Logo Facebook"
                                     className="w-6 h-6"
                                 />
                             </a>
@@ -64,10 +68,11 @@ export default function Footer() {
                                 href="https://www.instagram.com/tabaclesoler/"
                                 target="_blank"
                                 rel="noreferrer"
+                                aria-label="Visitez notre page Instagram"
                             >
                                 <img
                                     src="/assets/logo/instagram.png"
-                                    alt="Instagram"
+                                    alt="Logo Instagram"
                                     className="w-6 h-6"
                                 />
                             </a>
