@@ -21,14 +21,14 @@ export default function MentionsLegales() {
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
                         aria-label="Retourner a la page d'accueil"
                     >
-                        Retour a l&apos accueil
+                        Retour a l’ accueil
                     </button>
                 </div>
 
                 {/* Contenu des mentions legales */}
                 <div className="space-y-6">
                     <p className="text-lg">
-                        <strong className="font-semibold">Nom de l&apos entreprise :</strong>{' '}
+                        <strong className="font-semibold">Nom de l’ entreprise :</strong>{' '}
                         Tabac Presse Le Soler
                     </p>
                     <p className="text-lg">

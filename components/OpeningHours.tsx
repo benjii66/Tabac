@@ -33,7 +33,7 @@ export default function OpeningHours() {
               id="opening-hours-title"
               className="text-2xl sm:text-3xl font-bold text-gray-800"
             >
-              Horaires d&aposouverture
+              Horaires d’ouverture
             </h2>
           </div>
 
@@ -43,7 +43,7 @@ export default function OpeningHours() {
             aria-labelledby="opening-hours-list"
           >
             <div id="opening-hours-list" className="sr-only">
-              Horaires d&aposouverture pour chaque jour de la semaine
+              Horaires d’ouverture pour chaque jour de la semaine
             </div>
             {hours.map((item, index) => (
               <motion.div

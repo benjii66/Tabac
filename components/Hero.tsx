@@ -38,7 +38,7 @@ export default function Hero() {
               className="text-lg sm:text-xl md:text-2xl"
               aria-label="Slogan de l'etablissement"
             >
-              Le choix et la proximite, c&aposest ici !
+              Le choix et la proximite, c’est ici !
             </p>
           </motion.div>
         </div>
