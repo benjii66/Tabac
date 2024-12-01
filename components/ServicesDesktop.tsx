@@ -54,9 +54,9 @@ export default function ServicesDesktop() {
             centeredSlides={true}
             slidesPerView="auto"
             coverflowEffect={{
-                rotate: 30,
-                stretch: 20,
-                depth: 120,
+                rotate: 20,
+                stretch: 50, // Augmente la séparation entre les images
+                depth: 150, // Plus de profondeur
                 modifier: 1,
                 slideShadows: true,
             }}
@@ -73,25 +73,25 @@ export default function ServicesDesktop() {
                     key={index}
                     className="flex justify-center items-center"
                     style={{
-                        width: "20vw",
-                        height: "30vh",
+                        width: "30vw", // Augmente la largeur
+                        height: "40vh", // Augmente la hauteur
                     }}
                 >
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
-                        whileHover={{ scale: 1.05 }}
+                        whileHover={{ scale: 1.08 }}
                         transition={{ duration: 0.5 }}
-                        className="relative w-full h-full rounded-lg overflow-hidden border border-gray-200 shadow-sm"
+                        className="relative w-full h-full rounded-lg overflow-hidden border border-gray-300 shadow-md"
                     >
                         <img
                             src={service.image || "/assets/images/placeholder.jpg"}
-                            alt={service.title}
+                            alt={`${service.title} - ${service.description}`}
                             className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 flex flex-col justify-center items-center text-center bg-gradient-to-t from-black/20 to-black/10 text-white p-3">
-                            <h3 className="text-lg font-bold mb-1">{service.title}</h3>
-                            <p className="text-sm">{service.description}</p>
+                        <div className="absolute inset-0 flex flex-col justify-center items-center text-center bg-gradient-to-t from-black/50 to-black/20 text-white p-3">
+                            <h3 className="text-lg sm:text-xl font-bold mb-1">{service.title}</h3>
+                            <p className="text-sm sm:text-base">{service.description}</p>
                         </div>
                     </motion.div>
                 </SwiperSlide>
