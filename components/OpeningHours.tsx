@@ -33,7 +33,7 @@ export default function OpeningHours() {
               id="opening-hours-title"
               className="text-2xl sm:text-3xl font-bold text-gray-800"
             >
-              Horaires d'ouverture
+              Horaires d&aposouverture
             </h2>
           </div>
 
