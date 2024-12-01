@@ -48,7 +48,7 @@ export default function MentionsLegales() {
                     <p className="text-lg">
                         <strong className="font-semibold">Réalisation :</strong>{' '}
                         <a
-                            href="https://www.linkedin.com/in/benjamiinsimon/"
+                            href="https://benjamin-simon.vercel.app/"
                             target="_blank"
                             rel="noreferrer"
                             className="text-blue-600 hover:underline"
