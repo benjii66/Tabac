@@ -7,9 +7,9 @@ export default function Hero() {
   return (
     <section
       className="relative h-[80vh] w-full"
-      aria-label="Présentation du Tabac Presse Le Soler"
+      aria-label="Presentation du Tabac Presse Le Soler"
     >
-      {/* Image d'arrière-plan avec description accessible */}
+      {/* Image d'arriere-plan avec description accessible */}
       <Image
         src="/assets/images/devanture.jpg"
         alt="Devanture du Tabac Presse Le Soler"
@@ -18,10 +18,10 @@ export default function Hero() {
         priority
       />
 
-      {/* Superposition avec dégradé */}
+      {/* Superposition avec degrade */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50">
         <div className="container mx-auto h-full px-4 flex flex-col justify-center items-center text-white">
-          {/* Contenu animé */}
+          {/* Contenu anime */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -30,15 +30,15 @@ export default function Hero() {
           >
             <h1
               className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4"
-              aria-label="Nom de l'établissement"
+              aria-label="Nom de l'etablissement"
             >
               Tabac Presse Le Soler
             </h1>
             <p
               className="text-lg sm:text-xl md:text-2xl"
-              aria-label="Slogan de l'établissement"
+              aria-label="Slogan de l'etablissement"
             >
-              Le choix et la proximité, c'est ici !
+              Le choix et la proximite, c'est ici !
             </p>
           </motion.div>
         </div>
@@ -54,6 +54,6 @@ export default function Hero() {
 // "Votre tabac presse, au cœur de vos besoins."
 // "Plus qu’un bureau de tabac : un service avec le sourire."
 // "Ici, tout commence par un bon accueil."
-// "Le choix et la proximité, c’est ici !"
+// "Le choix et la proximite, c’est ici !"
 // "Votre tabac presse, un service qui compte pour vous."
-// "L’essentiel de votre quotidien, à portée de main."
+// "L’essentiel de votre quotidien, a portee de main."

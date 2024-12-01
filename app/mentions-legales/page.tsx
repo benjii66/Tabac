@@ -11,7 +11,7 @@ export default function MentionsLegales() {
             <div className="container mx-auto max-w-4xl bg-white shadow-md rounded-lg p-6">
                 {/* Titre principal */}
                 <h1 className="text-4xl font-bold text-center text-gray-900 mb-8">
-                    Mentions légales
+                    Mentions legales
                 </h1>
 
                 {/* Bouton de retour */}
@@ -19,13 +19,13 @@ export default function MentionsLegales() {
                     <button
                         onClick={() => router.push('/')}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        aria-label="Retourner à la page d'accueil"
+                        aria-label="Retourner a la page d'accueil"
                     >
-                        Retour à l'accueil
+                        Retour a l'accueil
                     </button>
                 </div>
 
-                {/* Contenu des mentions légales */}
+                {/* Contenu des mentions legales */}
                 <div className="space-y-6">
                     <p className="text-lg">
                         <strong className="font-semibold">Nom de l’entreprise :</strong>{' '}
@@ -36,7 +36,7 @@ export default function MentionsLegales() {
                         Orangers, 66270 Le Soler
                     </p>
                     <p className="text-lg">
-                        <strong className="font-semibold">Téléphone :</strong>{' '}
+                        <strong className="font-semibold">Telephone :</strong>{' '}
                         <a
                             href="tel:0468297856"
                             className="text-blue-600 hover:underline"
@@ -46,7 +46,7 @@ export default function MentionsLegales() {
                         </a>
                     </p>
                     <p className="text-lg">
-                        <strong className="font-semibold">Réalisation :</strong>{' '}
+                        <strong className="font-semibold">Realisation :</strong>{' '}
                         <a
                             href="https://benjamin-simon.vercel.app/"
                             target="_blank"
@@ -58,14 +58,14 @@ export default function MentionsLegales() {
                         </a>
                     </p>
                     <p className="text-lg">
-                        <strong className="font-semibold">Hébergeur :</strong> Vercel Inc.,
+                        <strong className="font-semibold">Hebergeur :</strong> Vercel Inc.,
                         340 S Lemon Ave #4133, Walnut, CA 91789, USA
                     </p>
                 </div>
 
-                {/* Footer des mentions légales */}
+                {/* Footer des mentions legales */}
                 <div className="mt-8 text-center text-sm text-gray-500">
-                    Ces mentions légales respectent les exigences légales en vigueur. <br /> Merci de votre visite et à bientôt !
+                    Ces mentions legales respectent les exigences legales en vigueur. <br /> Merci de votre visite et a bientôt !
                 </div>
             </div>
         </main>

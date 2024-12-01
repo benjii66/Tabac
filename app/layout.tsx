@@ -6,11 +6,11 @@ import AccessibilityMenu from '@/components/AccessibilityMenu';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Tabac Le Soler - Bureau de tabac à Le Soler',
-  description: 'Votre bureau de tabac de confiance à Le Soler. Tabac, Loto, PMU, et plus encore.',
+  title: 'Tabac Le Soler - Bureau de tabac a Le Soler',
+  description: 'Votre bureau de tabac de confiance a Le Soler. Tabac, Loto, PMU, et plus encore.',
   openGraph: {
     title: 'Tabac Le Soler',
-    description: 'Votre bureau de tabac de confiance à Le Soler. Tabac, Loto, PMU, et plus encore.',
+    description: 'Votre bureau de tabac de confiance a Le Soler. Tabac, Loto, PMU, et plus encore.',
     url: 'https://tabac-le-soler.com',
     images: [
       {
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Tabac Le Soler',
-    description: 'Votre bureau de tabac de confiance à Le Soler. Tabac, Loto, PMU, et plus encore.',
+    description: 'Votre bureau de tabac de confiance a Le Soler. Tabac, Loto, PMU, et plus encore.',
     images: ['/assets/images/devanture.jpg'],
   },
 };

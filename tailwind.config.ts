@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'], // Police par défaut
+        sans: ['Inter', 'sans-serif'], // Police par defaut
         dyslexia: ['OpenDyslexic', 'sans-serif'], // Police pour Dyslexie
       },
       backgroundImage: {

@@ -14,19 +14,19 @@ export default function AccessibilityMenu() {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    // Activer/Désactiver la police Dyslexie
+    // Activer/Desactiver la police Dyslexie
     const toggleDyslexiaFont = () => {
         document.body.classList.toggle('font-dyslexia');
         setIsDyslexiaActive(!isDyslexiaActive);
     };
 
-    // Activer/Désactiver le mode Contraste élevé
+    // Activer/Desactiver le mode Contraste eleve
     const toggleHighContrast = () => {
         document.body.classList.toggle('high-contrast');
         setIsHighContrastActive(!isHighContrastActive);
     };
 
-    // Activer/Désactiver le mode Nuit
+    // Activer/Desactiver le mode Nuit
     const toggleNightMode = () => {
         document.body.classList.toggle('night-mode');
         setIsNightModeActive(!isNightModeActive);
@@ -38,12 +38,12 @@ export default function AccessibilityMenu() {
             <div className="fixed bottom-4 right-4 z-50">
                 <button
                     onClick={toggleAccessibilityMenu}
-                    aria-label={isMenuOpen ? "Fermer le menu d'accessibilité" : "Ouvrir le menu d'accessibilité"}
+                    aria-label={isMenuOpen ? "Fermer le menu d'accessibilite" : "Ouvrir le menu d'accessibilite"}
                     className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
                 >
                     <Image
                         src="/assets/logo/eye.ico"
-                        alt="Icône menu d'accessibilité"
+                        alt="Icône menu d'accessibilite"
                         width={24}
                         height={24}
                         className="w-6 h-6"
@@ -52,14 +52,14 @@ export default function AccessibilityMenu() {
                 </button>
             </div>
 
-            {/* Menu d'accessibilité */}
+            {/* Menu d'accessibilite */}
             <div
                 className={`fixed top-0 right-0 h-full bg-black text-white shadow-lg transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
                     } transition-transform duration-300`}
                 style={{ width: '80%', maxWidth: '320px' }} // Ajustement responsive
             >
                 <div className="p-4">
-                    <h2 className="text-xl font-bold mb-4">Accessibilité</h2>
+                    <h2 className="text-xl font-bold mb-4">Accessibilite</h2>
                     <p className="text-sm mb-6">
                         Adaptez ce site selon vos besoins.
                     </p>
@@ -75,7 +75,7 @@ export default function AccessibilityMenu() {
                                 aria-pressed={isDyslexiaActive}
                             >
                                 {isDyslexiaActive
-                                    ? 'Désactiver la police Dyslexie'
+                                    ? 'Desactiver la police Dyslexie'
                                     : 'Activer la police Dyslexie'}
                             </button>
                         </li>
@@ -89,8 +89,8 @@ export default function AccessibilityMenu() {
                                 aria-pressed={isHighContrastActive}
                             >
                                 {isHighContrastActive
-                                    ? 'Désactiver le Contraste élevé'
-                                    : 'Activer le Contraste élevé'}
+                                    ? 'Desactiver le Contraste eleve'
+                                    : 'Activer le Contraste eleve'}
                             </button>
                         </li>
                         <li>
@@ -103,7 +103,7 @@ export default function AccessibilityMenu() {
                                 aria-pressed={isNightModeActive}
                             >
                                 {isNightModeActive
-                                    ? 'Désactiver le Mode Nuit'
+                                    ? 'Desactiver le Mode Nuit'
                                     : 'Activer le Mode Nuit'}
                             </button>
                         </li>
@@ -115,7 +115,7 @@ export default function AccessibilityMenu() {
                     <button
                         onClick={toggleAccessibilityMenu}
                         className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
-                        aria-label="Fermer le menu d'accessibilité"
+                        aria-label="Fermer le menu d'accessibilite"
                     >
                         Fermer le menu
                     </button>

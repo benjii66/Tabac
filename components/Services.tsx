@@ -10,13 +10,13 @@ import ServicesDesktop from "./ServicesDesktop";
 export default function Services() {
   const [isMobile, setIsMobile] = useState(false);
 
-  // Détecter la taille de l'écran
+  // Detecter la taille de l'ecran
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768); // Mobile si largeur <= 768px
     };
 
-    handleResize(); // Vérifier lors du premier rendu
+    handleResize(); // Verifier lors du premier rendu
     window.addEventListener("resize", handleResize);
 
     return () => window.removeEventListener("resize", handleResize);
@@ -33,17 +33,17 @@ export default function Services() {
         </h2>
         <p
           className="text-gray-600 text-center mb-12"
-          aria-label="Découvrez les services proposés par Tabac Presse Le Soler, incluant Tabac, Loto, PMU, et Presse."
+          aria-label="Decouvrez les services proposes par Tabac Presse Le Soler, incluant Tabac, Loto, PMU, et Presse."
         >
-          Découvrez tout ce que nous proposons pour répondre à vos besoins
+          Decouvrez tout ce que nous proposons pour repondre a vos besoins
           quotidiens.
         </p>
 
-        {/* Afficher la version appropriée */}
+        {/* Afficher la version appropriee */}
         {isMobile ? (
-          <ServicesMobile aria-label="Services affichés sur mobile" />
+          <ServicesMobile aria-label="Services affiches sur mobile" />
         ) : (
-          <ServicesDesktop aria-label="Services affichés sur desktop" />
+          <ServicesDesktop aria-label="Services affiches sur desktop" />
         )}
       </div>
     </section>

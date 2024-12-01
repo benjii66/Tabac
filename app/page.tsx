@@ -15,7 +15,7 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": "Tabac Presse Le Soler",
-    "description": "Votre bureau de tabac à Le Soler : Tabac, Loto, PMU et services de proximité.",
+    "description": "Votre bureau de tabac a Le Soler : Tabac, Loto, PMU et services de proximite.",
     "url": "https://tabac-le-soler.com"
   };
 

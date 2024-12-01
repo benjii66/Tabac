@@ -54,11 +54,11 @@ export default function MapSection() {
           Nous Contacter
         </h2>
         <p className="text-gray-600 text-sm sm:text-base">
-          Téléphone :{' '}
+          Telephone :{' '}
           <a
             href="tel:0468738659"
             className="text-blue-600 hover:underline"
-            aria-label="Numéro de téléphone du Tabac Presse Le Soler"
+            aria-label="Numero de telephone du Tabac Presse Le Soler"
           >
             04 68 73 86 59
           </a>

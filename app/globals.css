@@ -20,7 +20,7 @@ body {
 .font-dyslexia {
   font-family: 'OpenDyslexic', sans-serif !important;
   font-size: 1.2rem !important;
-  /* Taille légèrement plus grande */
+  /* Taille legerement plus grande */
   letter-spacing: 0.1em !important;
   /* Espacement des lettres accru */
   line-height: 1.6 !important;
@@ -28,7 +28,7 @@ body {
   background-color: #f5f5dc !important;
   /* Fond beige clair pour le confort visuel */
   color: #333 !important;
-  /* Texte légèrement plus foncé */
+  /* Texte legerement plus fonce */
   transition: all 0.3s ease-in-out;
 
 }
@@ -37,16 +37,16 @@ body {
   width: 80%;
   /* Ajuste la largeur pour mobile */
   max-width: 320px;
-  /* Limite la largeur à un maximum */
+  /* Limite la largeur a un maximum */
 }
 
 .accessibility-button {
   padding: 0.5rem 1rem;
-  /* Réduit le padding pour un design compact */
+  /* Reduit le padding pour un design compact */
   margin-bottom: 1rem;
   /* Ajoute un espacement entre les boutons */
   font-size: 0.9rem;
-  /* Réduit légèrement la taille du texte */
+  /* Reduit legerement la taille du texte */
 }
 
 @media (max-width: 768px) {
@@ -56,7 +56,7 @@ body {
   }
 }
 
-/* Mode Contraste élevé */
+/* Mode Contraste eleve */
 .high-contrast {
   background-color: black !important;
   color: yellow !important;
@@ -90,24 +90,24 @@ body {
   /* Liens plus visibles */
 }
 
-/* Images avec légère réduction de luminosité */
+/* Images avec legere reduction de luminosite */
 .night-mode img {
   filter: brightness(0.8);
-  /* Réduit un peu la luminosité */
+  /* Reduit un peu la luminosite */
 }
 
-/* Arrière-plan des sections */
+/* Arriere-plan des sections */
 .night-mode section,
 .night-mode header,
 .night-mode footer {
   background-color: #121212 !important;
-  /* Fond gris foncé pour sections */
+  /* Fond gris fonce pour sections */
 }
 
 /* Boutons en mode nuit */
 .night-mode button {
   background-color: #333 !important;
-  /* Boutons gris foncé */
+  /* Boutons gris fonce */
   color: #FFF !important;
   /* Texte des boutons blanc */
   border: 1px solid #555;
@@ -116,16 +116,16 @@ body {
 
 .night-mode button:hover {
   background-color: #444 !important;
-  /* Légèrement plus clair au survol */
+  /* Legerement plus clair au survol */
 }
 
-/* Applique un texte blanc par défaut à tous les éléments en Mode Nuit */
+/* Applique un texte blanc par defaut a tous les elements en Mode Nuit */
 .night-mode {
   color: #FFF !important;
   /* Texte blanc partout */
 }
 
-/* Applique à toutes les balises de texte (p, span, h1, etc.) */
+/* Applique a toutes les balises de texte (p, span, h1, etc.) */
 .night-mode p,
 .night-mode span,
 .night-mode h1,
@@ -139,7 +139,7 @@ body {
   /* Forcer le texte blanc */
 }
 
-/* Pour les textes dans les conteneurs spécifiques comme les horaires */
+/* Pour les textes dans les conteneurs specifiques comme les horaires */
 .night-mode .opening-hours,
 .night-mode .text-gray-800,
 .night-mode .text-gray-600 {
@@ -156,10 +156,10 @@ body {
 /* Si certains textes sont sur fond sombre, change les backgrounds */
 .night-mode .bg-stone-50 {
   background-color: #121212 !important;
-  /* Fond gris foncé */
+  /* Fond gris fonce */
 }
 
-/* Pour les boutons ou autres éléments dynamiques */
+/* Pour les boutons ou autres elements dynamiques */
 .night-mode button {
   color: #FFF !important;
   background-color: #333 !important;

@@ -8,16 +8,16 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import Image from "next/image";
 
-// Données des services
+// Donnees des services
 const services = [
     {
         title: 'CBD',
-        description: 'Large sélection de produits de CBD',
+        description: 'Large selection de produits de CBD',
         image: '/assets/images/CBD.jpg',
     },
     {
         title: 'Maroquinerie',
-        description: 'Des petits sacs à mains et accessoires',
+        description: 'Des petits sacs a mains et accessoires',
         image: '/assets/images/maroquinerie.jpg',
     },
     {
@@ -32,7 +32,7 @@ const services = [
     },
     {
         title: 'Produits Locaux',
-        description: 'Produits Locaux et de la Région',
+        description: 'Produits Locaux et de la Region',
         image: '/assets/images/prodLoc.jpg',
     },
     {

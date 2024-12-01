@@ -11,31 +11,31 @@ export default function Footer() {
                     <div>
                         <h2 className="text-xl font-bold">Tabac Presse Le Soler</h2>
                         <p className="text-sm text-gray-400">
-                            Le choix et la proximité, c'est ici !
+                            Le choix et la proximite, c'est ici !
                         </p>
                     </div>
 
-                    {/* Colonne 2 : Mentions légales */}
+                    {/* Colonne 2 : Mentions legales */}
                     <div className="md:text-center">
                         <ul className="space-y-1">
                             <li>
                                 <Link
                                     href="/mentions-legales"
                                     className="text-sm text-gray-400 hover:text-blue-400 transition"
-                                    aria-label="Lire les mentions légales du site"
+                                    aria-label="Lire les mentions legales du site"
                                 >
-                                    Mentions légales
+                                    Mentions legales
                                 </Link>
                             </li>
                         </ul>
                     </div>
 
-                    {/* Colonne 3 : Coordonnées */}
+                    {/* Colonne 3 : Coordonnees */}
                     <div>
                         <ul className="space-y-1 text-center">
                             <li>46 rue des Orangers, 66270 Le Soler</li>
                             <li>
-                                Téléphone :{" "}
+                                Telephone :{" "}
                                 <a
                                     href="tel:0468297856"
                                     className="hover:text-blue-400 transition"
@@ -48,7 +48,7 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Section des réseaux sociaux */}
+                {/* Section des reseaux sociaux */}
                 <div className="mt-6 text-center">
                     <ul className="flex justify-center space-x-6">
                         <li>

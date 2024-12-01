@@ -8,16 +8,16 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import Image from "next/image";
 
-// Données des services
+// Donnees des services
 const services = [
     {
         title: 'CBD',
-        description: 'Large sélection de produits de CBD',
+        description: 'Large selection de produits de CBD',
         image: '/assets/images/CBD.jpg',
     },
     {
         title: 'Maroquinerie',
-        description: 'Des petits sacs à mains et accessoires',
+        description: 'Des petits sacs a mains et accessoires',
         image: '/assets/images/maroquinerie.jpg',
     },
     {
@@ -32,7 +32,7 @@ const services = [
     },
     {
         title: 'Produits Locaux',
-        description: 'Produits Locaux et de la Région',
+        description: 'Produits Locaux et de la Region',
         image: '/assets/images/prodLoc.jpg',
     },
     {
@@ -87,7 +87,7 @@ export default function ServicesMobile() {
                     >
                         <Image
                             src={service.image || "/assets/images/placeholder.jpg"}
-                            alt={`${service.title} - ${service.description}`} // SEO amélioré
+                            alt={`${service.title} - ${service.description}`} // SEO ameliore
                             className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 flex flex-col justify-center items-center text-center bg-gradient-to-t from-black/20 to-black/10 text-white p-3">
