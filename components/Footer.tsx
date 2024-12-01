@@ -11,7 +11,7 @@ export default function Footer() {
                     <div>
                         <h2 className="text-xl font-bold">Tabac Presse Le Soler</h2>
                         <p className="text-sm text-gray-400">
-                            Le choix et la proximite, c'est ici !
+                            Le choix et la proximite, c&aposest ici !
                         </p>
                     </div>
 
