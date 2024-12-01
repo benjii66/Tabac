@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
     return (
@@ -20,9 +21,10 @@ export default function Footer() {
                             <li>
                                 <Link
                                     href="/mentions-legales"
-                                    className="text-sm text-gray-400 hover:text-blue-400 transition">
+                                    className="text-sm text-gray-400 hover:text-blue-400 transition"
+                                    aria-label="Lire les mentions légales du site"
+                                >
                                     Mentions légales
-
                                 </Link>
                             </li>
                         </ul>
@@ -56,10 +58,13 @@ export default function Footer() {
                                 rel="noreferrer"
                                 aria-label="Visitez notre page Facebook"
                             >
-                                <img
+                                <Image
                                     src="/assets/logo/facebook.png"
                                     alt="Logo Facebook"
+                                    width={24}
+                                    height={24}
                                     className="w-6 h-6"
+                                    priority
                                 />
                             </a>
                         </li>
@@ -70,10 +75,13 @@ export default function Footer() {
                                 rel="noreferrer"
                                 aria-label="Visitez notre page Instagram"
                             >
-                                <img
+                                <Image
                                     src="/assets/logo/instagram.png"
                                     alt="Logo Instagram"
+                                    width={24}
+                                    height={24}
                                     className="w-6 h-6"
+                                    priority
                                 />
                             </a>
                         </li>

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
+import Image from "next/image";
 
 // Données des services
 const services = [
@@ -73,8 +74,8 @@ export default function ServicesMobile() {
                     key={index}
                     className="flex justify-center items-center"
                     style={{
-                        width: "85%", 
-                        height: "40vh", 
+                        width: "85%",
+                        height: "40vh",
                     }}
                 >
                     <motion.div
@@ -84,7 +85,7 @@ export default function ServicesMobile() {
                         transition={{ duration: 0.5 }}
                         className="relative w-full h-full rounded-lg overflow-hidden border border-gray-200 shadow-sm"
                     >
-                        <img
+                        <Image
                             src={service.image || "/assets/images/placeholder.jpg"}
                             alt={`${service.title} - ${service.description}`} // SEO amélioré
                             className="w-full h-full object-cover"

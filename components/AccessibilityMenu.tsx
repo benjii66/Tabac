@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function AccessibilityMenu() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,10 +41,13 @@ export default function AccessibilityMenu() {
                     aria-label={isMenuOpen ? "Fermer le menu d'accessibilité" : "Ouvrir le menu d'accessibilité"}
                     className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
                 >
-                    <img
+                    <Image
                         src="/assets/logo/eye.ico"
                         alt="Icône menu d'accessibilité"
+                        width={24}
+                        height={24}
                         className="w-6 h-6"
+                        priority
                     />
                 </button>
             </div>
@@ -65,8 +69,8 @@ export default function AccessibilityMenu() {
                             <button
                                 onClick={toggleDyslexiaFont}
                                 className={`w-full text-left p-3 rounded transition ${isDyslexiaActive
-                                        ? 'bg-white text-blue-400'
-                                        : 'bg-gray-800 hover:bg-gray-700 text-white'
+                                    ? 'bg-white text-blue-400'
+                                    : 'bg-gray-800 hover:bg-gray-700 text-white'
                                     }`}
                                 aria-pressed={isDyslexiaActive}
                             >
@@ -79,8 +83,8 @@ export default function AccessibilityMenu() {
                             <button
                                 onClick={toggleHighContrast}
                                 className={`w-full text-left p-3 rounded transition ${isHighContrastActive
-                                        ? 'bg-white text-blue-400'
-                                        : 'bg-gray-800 hover:bg-gray-700 text-white'
+                                    ? 'bg-white text-blue-400'
+                                    : 'bg-gray-800 hover:bg-gray-700 text-white'
                                     }`}
                                 aria-pressed={isHighContrastActive}
                             >
@@ -93,8 +97,8 @@ export default function AccessibilityMenu() {
                             <button
                                 onClick={toggleNightMode}
                                 className={`w-full text-left p-3 rounded transition ${isNightModeActive
-                                        ? 'bg-white text-blue-400'
-                                        : 'bg-gray-800 hover:bg-gray-700 text-white'
+                                    ? 'bg-white text-blue-400'
+                                    : 'bg-gray-800 hover:bg-gray-700 text-white'
                                     }`}
                                 aria-pressed={isNightModeActive}
                             >

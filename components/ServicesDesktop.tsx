@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
+import Image from "next/image";
 
 // Données des services
 const services = [
@@ -55,8 +56,8 @@ export default function ServicesDesktop() {
             slidesPerView="auto"
             coverflowEffect={{
                 rotate: 20,
-                stretch: 50, 
-                depth: 150, 
+                stretch: 50,
+                depth: 150,
                 modifier: 1,
                 slideShadows: true,
             }}
@@ -73,8 +74,8 @@ export default function ServicesDesktop() {
                     key={index}
                     className="flex justify-center items-center"
                     style={{
-                        width: "30vw", 
-                        height: "40vh", 
+                        width: "30vw",
+                        height: "40vh",
                     }}
                 >
                     <motion.div
@@ -84,7 +85,7 @@ export default function ServicesDesktop() {
                         transition={{ duration: 0.5 }}
                         className="relative w-full h-full rounded-lg overflow-hidden border border-gray-300 shadow-md"
                     >
-                        <img
+                        <Image
                             src={service.image || "/assets/images/placeholder.jpg"}
                             alt={`${service.title} - ${service.description}`}
                             className="w-full h-full object-cover"
