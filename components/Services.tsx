@@ -1,14 +1,11 @@
 "use client";
 
 // ACHTUNG
-// aggrandir les placeholders d'images de services
-
-
+// Aggrandir les placeholders d'images de services
 
 import { useEffect, useState } from "react";
 import ServicesMobile from "./ServicesMobile";
 import ServicesDesktop from "./ServicesDesktop";
-
 
 export default function Services() {
   const [isMobile, setIsMobile] = useState(false);
@@ -26,21 +23,29 @@ export default function Services() {
   }, []);
 
   return (
-    <section className="py-16 bg-stone-100">
+    <section className="py-16 bg-stone-100" aria-labelledby="services-title">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
-          Nos Services
+        <h2
+          id="services-title"
+          className="text-3xl font-bold text-gray-800 mb-4 text-center"
+        >
+          Nos Services : Tabac, Presse, et plus encore
         </h2>
-        <p className="text-gray-600 text-center mb-12">
-          Découvrez tout ce que nous proposons
+        <p
+          className="text-gray-600 text-center mb-12"
+          aria-label="Découvrez les services proposés par Tabac Presse Le Soler, incluant Tabac, Loto, PMU, et Presse."
+        >
+          Découvrez tout ce que nous proposons pour répondre à vos besoins
+          quotidiens.
         </p>
 
         {/* Afficher la version appropriée */}
-        {isMobile ? <ServicesMobile /> : <ServicesDesktop />}
+        {isMobile ? (
+          <ServicesMobile aria-label="Services affichés sur mobile" />
+        ) : (
+          <ServicesDesktop aria-label="Services affichés sur desktop" />
+        )}
       </div>
     </section>
   );
 }
-
-
-
