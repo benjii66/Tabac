@@ -43,7 +43,7 @@ export default function OpeningHours() {
             aria-labelledby="opening-hours-list"
           >
             <div id="opening-hours-list" className="sr-only">
-              Horaires d'ouverture pour chaque jour de la semaine
+              Horaires d&aposouverture pour chaque jour de la semaine
             </div>
             {hours.map((item, index) => (
               <motion.div

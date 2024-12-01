@@ -65,7 +65,7 @@ export default function MentionsLegales() {
 
                 {/* Footer des mentions legales */}
                 <div className="mt-8 text-center text-sm text-gray-500">
-                    Ces mentions legales respectent les exigences legales en vigueur. <br /> Merci de votre visite et a bientôt !
+                    Ces mentions legales respectent les exigences legales en vigueur. <br /> Merci de votre visite et a bientot !
                 </div>
             </div>
         </main>
