@@ -1,0 +1,51 @@
+[
+    {
+        "id": 1,
+        "title": "CBD",
+        "description": "Large selection de produits de CBD",
+        "image": "/assets/images/CBD.jpg",
+        "details": "Découvrez notre large sélection de produits CBD : huiles, fleurs, et produits dérivés. Tous nos produits sont issus de cultures biologiques et répondent aux normes en vigueur."
+    },
+    {
+        "id": 2,
+        "title": "Maroquinerie",
+        "description": "Des petits sacs à mains et accessoires",
+        "image": "/assets/images/maroquinerie.jpg",
+        "details": "Une collection exclusive de maroquinerie : sacs à main, portefeuilles, et accessoires en cuir de qualité supérieure, parfaits pour un style élégant et pratique."
+    },
+    {
+        "id": 3,
+        "title": "Magasin",
+        "description": "Rayons spacieux",
+        "image": "/assets/images/magas1.jpg",
+        "details": "Un espace magasin moderne et spacieux, offrant un large éventail de produits pour répondre à tous vos besoins quotidiens."
+    },
+    {
+        "id": 4,
+        "title": "Presse",
+        "description": "Journaux et magazines",
+        "image": "/assets/images/presse.jpg",
+        "details": "Retrouvez un large choix de journaux et magazines locaux et internationaux, pour rester informé ou profiter d’un moment de lecture détente."
+    },
+    {
+        "id": 5,
+        "title": "Produits Locaux",
+        "description": "Produits Locaux et de la Région",
+        "image": "/assets/images/prodLoc.jpg",
+        "details": "Découvrez les saveurs et produits de notre région : miel, confitures, et bien plus encore. Soutenez les producteurs locaux !"
+    },
+    {
+        "id": 6,
+        "title": "Cigarettes Electroniques",
+        "description": "Produits e-cigarettes",
+        "image": "/assets/images/ecig.jpg",
+        "details": "Notre gamme de cigarettes électroniques comprend les dernières technologies pour une expérience de vapotage agréable. Profitez également de nos e-liquides variés."
+    },
+    {
+        "id": 7,
+        "title": "Boissons",
+        "description": "À boire et ça repart",
+        "image": "/assets/images/Frigo.jpg",
+        "details": "Un large choix de boissons fraîches et chaudes : sodas, cafés, thés, et bien d’autres pour toutes vos envies."
+    }
+]

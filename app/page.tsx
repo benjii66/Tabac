@@ -7,6 +7,7 @@ import Services from '@/components/Services';
 import MapSection from '@/components/MapSection';
 import Footer from '@/components/Footer';
 import AccessibilityMenu from '@/components/AccessibilityMenu';
+import NewsSection from '@/components/NewsSection';
 import Head from 'next/head';
 
 export default function Home() {
@@ -44,6 +45,14 @@ export default function Home() {
       >
         <OpeningHours />
       </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <NewsSection />
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}

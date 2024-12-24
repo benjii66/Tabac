@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Pagination, Autoplay } from "swiper/modules";
 import { motion } from "framer-motion";
@@ -8,46 +10,34 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import Image from "next/image";
 
-// Donnees des services
-const services = [
-    {
-        title: 'CBD',
-        description: 'Large selection de produits de CBD',
-        image: '/assets/images/CBD.jpg',
-    },
-    {
-        title: 'Maroquinerie',
-        description: 'Des petits sacs a mains et accessoires',
-        image: '/assets/images/maroquinerie.jpg',
-    },
-    {
-        title: 'Magasin',
-        description: 'Rayons spacieux',
-        image: '/assets/images/magas1.jpg',
-    },
-    {
-        title: 'Presse',
-        description: 'Journaux et magazines',
-        image: '/assets/images/presse.jpg',
-    },
-    {
-        title: 'Produits Locaux',
-        description: 'Produits Locaux et de la Region',
-        image: '/assets/images/prodLoc.jpg',
-    },
-    {
-        title: 'Cigarettes Electroniques',
-        description: 'Produits e-cigarettes',
-        image: '/assets/images/ecig.jpg',
-    },
-    {
-        title: 'Boissons',
-        description: 'A boire et ça repart',
-        image: '/assets/images/Frigo.jpg',
-    },
-];
+interface Service {
+    id: number;
+    title: string;
+    description: string;
+    details: string;
+    image: string;
+}
 
-export default function ServicesMobile() {
+interface Props {
+    onSelectService: (service: Service) => void; // Ajout de la prop `onSelectService`
+}
+
+export default function ServicesMobile({ onSelectService }: Props) {
+    const [services, setServices] = useState<Service[]>([]);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await axios.get("/api/services");
+                setServices(response.data);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des services :", error);
+            }
+        };
+
+        fetchServices();
+    }, []);
+
     return (
         <Swiper
             effect="coverflow"
@@ -69,14 +59,15 @@ export default function ServicesMobile() {
             modules={[EffectCoverflow, Pagination, Autoplay]}
             className="w-full py-8"
         >
-            {services.map((service, index) => (
+            {services.map((service) => (
                 <SwiperSlide
-                    key={index}
+                    key={service.id}
                     className="flex justify-center items-center"
                     style={{
                         width: "85%",
                         height: "40vh",
                     }}
+                    onClick={() => onSelectService(service)} // Utilisation de la prop pour signaler le service sélectionné
                 >
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -87,7 +78,7 @@ export default function ServicesMobile() {
                     >
                         <Image
                             src={service.image || "/assets/images/placeholder.jpg"}
-                            alt={`${service.title} - ${service.description}`} // SEO ameliore
+                            alt={`${service.title} - ${service.description}`} // SEO amélioré
                             width={85}
                             height={40}
                             className="w-full h-full object-cover"
@@ -102,3 +93,4 @@ export default function ServicesMobile() {
         </Swiper>
     );
 }
+

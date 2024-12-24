@@ -1,19 +1,34 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { FaClock } from 'react-icons/fa';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { motion } from "framer-motion";
+import { FaClock } from "react-icons/fa";
 
-const hours = [
-  { day: 'Lundi', hours: '7h00 - 19h00' },
-  { day: 'Mardi', hours: '7h00 - 19h00' },
-  { day: 'Mercredi', hours: '7h00 - 19h00' },
-  { day: 'Jeudi', hours: '7h00 - 19h00' },
-  { day: 'Vendredi', hours: '7h00 - 19h00' },
-  { day: 'Samedi', hours: '7h00 - 12h30 & 14h30 - 19h00' },
-  { day: 'Dimanche', hours: '8h00 - 12h30' },
-];
+interface OpeningHour {
+  day: string;
+  hours: string;
+}
 
 export default function OpeningHours() {
+
+  const [openingHours, setOpeningHours] = useState<OpeningHour[]>([]);
+
+  // Fonction pour récupérer les horaires via l'API
+  useEffect(() => {
+    const fetchOpeningHours = async () => {
+      try {
+        const response = await axios.get("/api/openingHours");
+        setOpeningHours(response.data);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des horaires :", error);
+      }
+    };
+
+    fetchOpeningHours();
+  }, []);
+
+
   return (
     <section
       className="py-12 sm:py-16 bg-white"
@@ -45,7 +60,7 @@ export default function OpeningHours() {
             <div id="opening-hours-list" className="sr-only">
               Horaires d’ouverture pour chaque jour de la semaine
             </div>
-            {hours.map((item, index) => (
+            {openingHours.map((item, index) => (
               <motion.div
                 key={item.day}
                 initial={{ opacity: 0, x: -20 }}
