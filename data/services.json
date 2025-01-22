@@ -1,17 +1,17 @@
 [
   {
     "id": 1,
-    "title": "CBD",
-    "description": "Large selection de produits de CBD",
-    "image": "/assets/images/CBD.jpg",
-    "details": "Découvrez notre large sélection de produits CBD : huiles, fleurs, et produits dérivés. Tous nos produits sont issus de cultures biologiques et répondent aux normes en vigueur."
+    "title": "Vape",
+    "description": "Explorez notre vaste sélection de CBD et e-liquides !",
+    "image": "/assets/images/vape.jpg",
+    "details": "Découvrez notre sélection de produits CBD, conformes aux normes françaises, et nos e-liquides, régulièrement renouvelés pour offrir toujours plus de goûts et de saveurs."
   },
   {
     "id": 2,
     "title": "Maroquinerie",
-    "description": "Des petits sacs à mains et accessoires",
-    "image": "/assets/images/maroquinerie.jpg",
-    "details": "Une collection exclusive de maroquinerie : sacs à main, portefeuilles, et accessoires en cuir de qualité supérieure, parfaits pour un style élégant et pratique."
+    "description": "Des petits sacs à mains, vêtements et accessoires",
+    "image": "/assets/images/maroro.jpg",
+    "details": "Une collection exclusive de maroquinerie : sacs à main, portefeuilles, et accessoires, parfaits pour un style élégant et pratique, de bonnes idées cadeaux à petit prix."
   },
   {
     "id": 3,
@@ -30,9 +30,9 @@
   {
     "id": 5,
     "title": "Produits Locaux",
-    "description": "Produits Locaux et de la Région",
-    "image": "/assets/images/prodLoc.jpg",
-    "details": "Découvrez les saveurs et produits de notre région : miel, confitures, et bien plus encore. Soutenez les producteurs locaux !"
+    "description": "Éveillez vos sens avec nos produits du terroir : chaque pièce un hommage à la tradition locale !",
+    "image": "/assets/images/bougies.jpg",
+    "details": "Vins élaborés au domaine Piquemal, parfums d'ambiance et bougies fabriqués à Argelès-Sur-Mer, et autres produits issus de l'artisanat local."
   },
   {
     "id": 6,

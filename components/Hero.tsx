@@ -11,7 +11,7 @@ export default function Hero() {
     >
       {/* Image d'arriere-plan avec description accessible */}
       <Image
-        src="/assets/images/devanture.jpg"
+        src="/assets/images/triple_monstre.jpg"
         alt="Devanture du Tabac Presse Le Soler"
         fill
         className="object-cover brightness-75"

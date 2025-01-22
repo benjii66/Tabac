@@ -1,19 +1,18 @@
 [
-    {
-      "id": 2,
-      "title": "Nouvel arrivage de nos torchons catalans",
-      "description": "Découvrez les nouveaux torchons locaux.",
-      "image": "/assets/images/torchons_catalans.jpg",
-      "date": "2024-12-24",
-      "details": "Nos torchons catalans ils sont jolis, regardez nos torchons catalans ils sont beaux."
-    },
-    {
-      "id": 1,
-      "title": "Gourdes de Noël en édition limitée",
-      "description": "Nos gourdes festives, parfaites pour vos fêtes de fin d'année !",
-      "image": "/assets/images/gourdes-noel.png",
-      "date": "2024-12-20",
-      "details": "En cette période de Noël, découvrez nos nouvelles gourdes aux designs festifs. Réutilisables et écologiques, elles sont parfaites pour offrir ou pour profiter de vos boissons chaudes préférées pendant les fêtes."
-    }
-  ]
-  
+  {
+    "id": 1,
+    "title": "Gourdes de Noël actuellement en SOLDES",
+    "description": "Nos gourdes festives, parfaites pour vos fêtes de fin d'année !",
+    "image": "/assets/images/gourdes-noel.png",
+    "date": "2025-01-18",
+    "details": "Découvrez nos nouvelles gourdes aux designs festifs. Réutilisables et écologiques, elles sont parfaites pour offrir ou pour profiter de vos boissons chaudes préférées pendant les fêtes."
+  },
+  {
+    "id": 3,
+    "title": "Nouvelle E-cigarette Elfbar",
+    "description": "Pouvant contenir 4 pods de goûts différents selon l'envie !",
+    "image": "/assets/images/nouvel_article.jpg",
+    "date": "2025-01-22",
+    "details": "Recharges disponibles en magasin avec tous les différents goûts."
+  }
+]
