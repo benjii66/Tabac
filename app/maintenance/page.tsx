@@ -34,13 +34,6 @@ export default function Maintenance() {
             <p className="text-2xl font-semibold text-gray-800 mb-8">
                 Réouverture prévue dans : <span>{formatTime(timeLeft)}</span>
             </p>
-            <Image
-                src="/worker-animation.gif"
-                alt="Ouvrier travaillant"
-                width={150}
-                height={150}
-                className=""
-            />
         </div>
     );
 }
