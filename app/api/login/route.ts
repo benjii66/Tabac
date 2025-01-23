@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
         // Logs pour débogage
         console.log("Requête reçue :", { username, password });
         console.log("ADMIN_USERNAME :", process.env.ADMIN_USERNAME);
-        console.log("ADMIN_PASSWORD_HASH :", process.env.ADMIN_PASSWORD_HASH);
+        console.log("ADMIN_PASSWORD_HASH brut :", process.env.ADMIN_PASSWORD_HASH);
 
         // Vérification du nom d'utilisateur
         if (username !== process.env.ADMIN_USERNAME) {
@@ -19,11 +19,12 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Vérification du mot de passe
-        const passwordHash = `${process.env.ADMIN_PASSWORD_HASH}`.trim();
-        console.log("Hash utilisé pour la vérification :", passwordHash);
+        // Nettoyage du hash pour éviter les backslashes
+        const cleanHash = process.env.ADMIN_PASSWORD_HASH?.replace(/\\/g, "");
+        console.log("Hash nettoyé utilisé pour la vérification :", cleanHash);
 
-        const passwordMatches = await argon2.verify(passwordHash, password);
+        // Vérification du mot de passe
+        const passwordMatches = await argon2.verify(cleanHash || "", password);
         if (!passwordMatches) {
             return NextResponse.json(
                 { error: "Mot de passe incorrect" },
