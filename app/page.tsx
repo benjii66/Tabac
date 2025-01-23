@@ -17,7 +17,7 @@ export default function Home() {
     "@type": "WebPage",
     "name": "Tabac Presse Le Soler",
     "description": "Votre bureau de tabac a Le Soler : Tabac, Loto, PMU et services de proximite.",
-    "url": "https://tabac-le-soler.vercel.app"
+    "url": "https://tabaclesoler.fr"
   };
 
   return (

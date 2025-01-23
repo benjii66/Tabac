@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Tabac Le Soler',
     description: 'Votre bureau de tabac de confiance a Le Soler. Tabac, Loto, PMU, et plus encore.',
-    url: 'https://tabac-lesoler.vercel.app/',
+    url: 'https://tabaclesoler.fr/',
     images: [
       {
         url: '/assets/images/devanture.jpg',
