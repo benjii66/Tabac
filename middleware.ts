@@ -26,6 +26,8 @@ export function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
+    //TRIPLE MOOOONSTRE
+
     // Permettre l'accès à /admin si le token est valide
     if (pathname.startsWith("/admin")) {
         const token = req.cookies.get("auth_token")?.value;
