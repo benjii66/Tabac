@@ -19,12 +19,18 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Nettoyage du hash pour éviter les backslashes
-        const cleanHash = process.env.ADMIN_PASSWORD_HASH?.replace(/\\/g, "");
-        console.log("Hash nettoyé utilisé pour la vérification :", cleanHash);
+        // Lecture du hash depuis les variables d'environnement
+        const passwordHash = process.env.ADMIN_PASSWORD_HASH;
+        if (!passwordHash) {
+            console.error("Hash de mot de passe introuvable dans les variables d'environnement");
+            return NextResponse.json(
+                { error: "Erreur de configuration côté serveur" },
+                { status: 500 }
+            );
+        }
 
         // Vérification du mot de passe
-        const passwordMatches = await argon2.verify(cleanHash || "", password);
+        const passwordMatches = await argon2.verify(passwordHash, password);
         if (!passwordMatches) {
             return NextResponse.json(
                 { error: "Mot de passe incorrect" },
