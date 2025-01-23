@@ -79,7 +79,7 @@ export default function ManageOpeningHours() {
 
             <div className="container mx-auto py-8 px-4">
                 <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-4">Horaires d'ouverture</h2>
+                    <h2 className="text-2xl font-bold mb-4">Horaires d&apos;ouverture</h2>
 
                     {loading ? (
                         <p>Chargement...</p>

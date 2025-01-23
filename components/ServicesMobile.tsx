@@ -29,9 +29,17 @@ export default function ServicesMobile({ onSelectService }: Props) {
         const fetchServices = async () => {
             try {
                 const response = await axios.get("/api/services");
-                setServices(response.data);
+
+                console.log("Données reçues depuis l'API services:", response.data); // Debug des données
+
+                if (Array.isArray(response.data)) {
+                    setServices(response.data); // Assigner les données seulement si elles sont un tableau
+                } else {
+                    console.error("Données invalides reçues:", response.data);
+                    setServices([]); // Mettre un tableau vide en cas de problème
+                }
             } catch (error) {
-                console.error("Erreur lors de la récupération des services :", error);
+                console.error("Erreur lors de la récupération des services:", error);
             }
         };
 
@@ -59,38 +67,41 @@ export default function ServicesMobile({ onSelectService }: Props) {
             modules={[EffectCoverflow, Pagination, Autoplay]}
             className="w-full py-8"
         >
-            {services.map((service) => (
-                <SwiperSlide
-                    key={service.id}
-                    className="flex justify-center items-center"
-                    style={{
-                        width: "85%",
-                        height: "40vh",
-                    }}
-                    onClick={() => onSelectService(service)} // Utilisation de la prop pour signaler le service sélectionné
-                >
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        whileHover={{ scale: 1.05 }}
-                        transition={{ duration: 0.5 }}
-                        className="relative w-full h-full rounded-lg overflow-hidden border border-gray-200 shadow-sm"
+            {services.length > 0 ? (
+                services.map((service) => (
+                    <SwiperSlide
+                        key={service.id}
+                        className="flex justify-center items-center"
+                        style={{
+                            width: "85%",
+                            height: "40vh",
+                        }}
+                        onClick={() => onSelectService(service)} // Utilisation de la prop pour signaler le service sélectionné
                     >
-                        <Image
-                            src={service.image || "/assets/images/placeholder.jpg"}
-                            alt={`${service.title} - ${service.description}`} // SEO amélioré
-                            width={85}
-                            height={40}
-                            className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 flex flex-col justify-center items-center text-center bg-gradient-to-t from-black/20 to-black/10 text-white p-3">
-                            <h3 className="text-md font-bold mb-1">{service.title}</h3>
-                            <p className="text-xs">{service.description}</p>
-                        </div>
-                    </motion.div>
-                </SwiperSlide>
-            ))}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            whileHover={{ scale: 1.05 }}
+                            transition={{ duration: 0.5 }}
+                            className="relative w-full h-full rounded-lg overflow-hidden border border-gray-200 shadow-sm"
+                        >
+                            <Image
+                                src={service.image || "/assets/images/placeholder.jpg"}
+                                alt={`${service.title} - ${service.description}`} // SEO amélioré
+                                width={85}
+                                height={40}
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 flex flex-col justify-center items-center text-center bg-gradient-to-t from-black/20 to-black/10 text-white p-3">
+                                <h3 className="text-md font-bold mb-1">{service.title}</h3>
+                                <p className="text-xs">{service.description}</p>
+                            </div>
+                        </motion.div>
+                    </SwiperSlide>
+                ))
+            ) : (
+                <p className="text-center text-gray-500">Aucun service disponible pour le moment.</p>
+            )}
         </Swiper>
     );
 }
-

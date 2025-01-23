@@ -29,7 +29,7 @@ export default function AdminDashboard() {
     return (
         <main className="min-h-screen bg-gray-100">
             <header className="bg-blue-600 text-white py-4 shadow-md flex justify-between items-center px-6">
-                <h1 className="text-3xl font-bold">Panneau d'administration</h1>
+                <h1 className="text-3xl font-bold">Panneau d&apos;administration</h1>
                 <div className="flex space-x-4">
                     <button
                         onClick={handleLogout}
@@ -51,12 +51,12 @@ export default function AdminDashboard() {
                 <section className="bg-white p-6 rounded-lg shadow-md mb-8">
                     <h2 className="text-2xl font-bold mb-4">Tutoriel</h2>
                     <p className="text-gray-700 mb-2">
-                        Bienvenue dans l'administration du site. Voici les étapes pour gérer les données :
+                        Bienvenue dans l&apos;administration du site. Voici les étapes pour gérer les données :
                     </p>
                     <ul className="list-disc pl-6 text-gray-700">
-                        <li>Pour ajouter une nouvelle donnée, cliquez sur "Créer".</li>
-                        <li>Pour modifier une donnée existante, cliquez sur "Modifier".</li>
-                        <li>Pour supprimer une donnée, utilisez le bouton "Supprimer".</li>
+                        <li>Pour ajouter une nouvelle donnée, cliquez sur &quot;Créer&quot;.</li>
+                        <li>Pour modifier une donnée existante, cliquez sur &quot;Modifier&quot;.</li>
+                        <li>Pour supprimer une donnée, utilisez le bouton &quot;Supprimer&quot;.</li>
                     </ul>
                 </section>
 

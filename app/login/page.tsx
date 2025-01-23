@@ -36,7 +36,7 @@ export default function LoginPage() {
                 {error && <p className="text-red-500 text-center mb-4">{error}</p>}
                 <form onSubmit={handleLogin}>
                     <div className="mb-4">
-                        <label className="block text-sm font-bold mb-2">Nom d'utilisateur</label>
+                        <label className="block text-sm font-bold mb-2">Nom d&apos;utilisateur</label>
                         <input
                             type="text"
                             value={username}

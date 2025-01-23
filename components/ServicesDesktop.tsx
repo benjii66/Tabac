@@ -11,55 +11,63 @@ import "swiper/css/pagination";
 import Image from "next/image";
 
 interface Service {
-    id: number;
-    title: string;
-    description: string;
-    details: string;
-    image: string;
-  }
-  
-  interface Props {
-    onSelectService: (service: Service) => void;
-  }
-  
-  export default function ServicesDesktop({ onSelectService }: Props) {
-    const [services, setServices] = useState<Service[]>([]);
-  
-    useEffect(() => {
-      const fetchServices = async () => {
-        try {
-          const response = await axios.get("/api/services");
-          setServices(response.data);
-        } catch (error) {
-          console.error("Erreur lors de la récupération des services :", error);
+  id: number;
+  title: string;
+  description: string;
+  details: string;
+  image: string;
+}
+
+interface Props {
+  onSelectService: (service: Service) => void;
+}
+
+export default function ServicesDesktop({ onSelectService }: Props) {
+  const [services, setServices] = useState<Service[]>([]);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get("/api/services");
+
+        console.log("Services récupérés :", response.data); // Debug des données
+        if (Array.isArray(response.data)) {
+          setServices(response.data); // Assigne uniquement si c'est un tableau
+        } else {
+          console.error("Les données reçues ne sont pas un tableau :", response.data);
+          setServices([]); // Par défaut, on assigne un tableau vide
         }
-      };
-  
-      fetchServices();
-    }, []);
-  
-    return (
-      <Swiper
-        effect="coverflow"
-        grabCursor={true}
-        centeredSlides={true}
-        slidesPerView="auto"
-        coverflowEffect={{
-          rotate: 20,
-          stretch: 50,
-          depth: 150,
-          modifier: 1,
-          slideShadows: true,
-        }}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
-        pagination={{ clickable: true }}
-        modules={[EffectCoverflow, Pagination, Autoplay]}
-        className="w-full py-8"
-      >
-        {services.map((service) => (
+      } catch (error) {
+        console.error("Erreur lors de la récupération des services :", error);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  return (
+    <Swiper
+      effect="coverflow"
+      grabCursor={true}
+      centeredSlides={true}
+      slidesPerView="auto"
+      coverflowEffect={{
+        rotate: 20,
+        stretch: 50,
+        depth: 150,
+        modifier: 1,
+        slideShadows: true,
+      }}
+      autoplay={{
+        delay: 3000,
+        disableOnInteraction: false,
+      }}
+      pagination={{ clickable: true }}
+      modules={[EffectCoverflow, Pagination, Autoplay]}
+      className="w-full py-8"
+    >
+      {services.length > 0 ? (
+        services.map((service) => (
           <SwiperSlide
             key={service.id}
             className="flex justify-center items-center"
@@ -89,8 +97,10 @@ interface Service {
               </div>
             </motion.div>
           </SwiperSlide>
-        ))}
-      </Swiper>
-    );
-  }
-  
+        ))
+      ) : (
+        <p className="text-gray-500 text-center">Aucun service disponible pour le moment.</p>
+      )}
+    </Swiper>
+  );
+}
