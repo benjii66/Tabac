@@ -241,7 +241,7 @@ export default function ManageServices() {
 
                             {/* Aperçu de l'image */}
                             <div className="mb-4">
-                                <label className="block text-sm font-bold mb-2">Aperçu de l'image</label>
+                                <label className="block text-sm font-bold mb-2">Aperçu de l&apos;image</label>
                                 <img
                                     src={previewImage || "/assets/images/placeholder.jpg"} // Affiche l'aperçu ou un placeholder
                                     alt="Aperçu"
