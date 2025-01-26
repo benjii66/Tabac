@@ -768,7 +768,9 @@ export default function ManageNews() {
                     >
                         <div className="bg-white rounded-lg p-6">
                             <h3 className="text-lg font-bold mb-4">Confirmer la suppression</h3>
-                            <p className="mb-4">Êtes-vous sûr de vouloir supprimer l'actualité : <strong>{newsToDelete.title}</strong> ?</p>
+                            <p className="mb-4">
+                                Êtes-vous sûr de vouloir supprimer l&apos;actualité : <strong>{newsToDelete.title}</strong> ?
+                            </p>
                             <div className="flex justify-end gap-2">
                                 <button
                                     onClick={() => setNewsToDelete(null)}
