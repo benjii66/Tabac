@@ -165,3 +165,69 @@ body {
   background-color: #333 !important;
   /* Bouton sombre */
 }
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: #1f2937;
+  /* Couleur gris foncé */
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  background: #374151;
+  /* Couleur gris plus foncé */
+  color: #fff;
+}
+
+.swiper-button-prev {
+  left: -50px;
+  /* Décale vers la gauche */
+}
+
+.swiper-button-next {
+  right: -50px;
+  /* Décale vers la droite */
+}
+
+.custom-swiper-button-prev,
+.custom-swiper-button-next {
+  color: red;
+  font-size: 1.5rem;
+  width: 30px;
+  height: 30px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 30%;
+  /* Remonte les flèches légèrement */
+  transform: translateY(-50%);
+  z-index: 10;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.custom-swiper-button-prev:hover,
+.custom-swiper-button-next:hover {
+  background-color: rgba(255, 0, 0, 0.9);
+  transform: translateY(-50%) scale(1.2);
+}
+
+.custom-swiper-button-prev {
+  left: -5px;
+}
+
+.custom-swiper-button-next {
+  right: -5px;
+}

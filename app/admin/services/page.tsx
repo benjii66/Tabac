@@ -196,7 +196,7 @@ export default function ManageServices() {
                                     <tr key={service.id}>
                                         <td className="border border-gray-300 px-4 py-2">
                                             <img
-                                                src={service.image || "/assets/images/placeholder.jpg"}
+                                                src={service.image || "/assets/images/placeholder.svg"}
                                                 alt={service.title}
                                                 className="w-32 h-32 object-cover rounded"
                                             />
@@ -243,7 +243,7 @@ export default function ManageServices() {
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Aperçu de l&apos;image</label>
                                 <img
-                                    src={previewImage || "/assets/images/placeholder.jpg"} // Affiche l'aperçu ou un placeholder
+                                    src={previewImage || "/assets/images/placeholder.svg"} // Affiche l'aperçu ou un placeholder
                                     alt="Aperçu"
                                     className="w-full h-40 object-cover rounded mb-4"
                                 />
@@ -334,7 +334,7 @@ export default function ManageServices() {
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Image</label>
                                 <img
-                                    src={previewImage || editingService.image || "/assets/images/placeholder.jpg"}
+                                    src={previewImage || editingService.image || "/assets/images/placeholder.svg"}
                                     alt="Aperçu"
                                     className="w-full h-40 object-cover rounded mb-4"
                                 />

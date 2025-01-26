@@ -27,7 +27,7 @@ export async function POST(request) {
     }
 
     // Gestion de l'image
-    let imagePath = "/assets/images/placeholder.jpg"; // Valeur par défaut
+    let imagePath = "/assets/images/placeholder.svg"; // Valeur par défaut
     if (file && file.name) {
       const newFilePath = path.join(uploadDir, file.name);
       const fileBuffer = Buffer.from(await file.arrayBuffer());

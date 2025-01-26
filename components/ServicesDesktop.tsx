@@ -85,7 +85,7 @@ export default function ServicesDesktop({ onSelectService }: Props) {
               className="relative w-full h-full rounded-lg overflow-hidden border border-gray-300 shadow-md"
             >
               <Image
-                src={service.image || "/assets/images/placeholder.jpg"}
+                src={service.image || "/assets/images/placeholder.svg"}
                 alt={`${service.title} - ${service.description}`}
                 width={400}
                 height={400}

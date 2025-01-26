@@ -86,7 +86,7 @@ export default function ServicesMobile({ onSelectService }: Props) {
                             className="relative w-full h-full rounded-lg overflow-hidden border border-gray-200 shadow-sm"
                         >
                             <Image
-                                src={service.image || "/assets/images/placeholder.jpg"}
+                                src={service.image || "/assets/images/placeholder.svg"}
                                 alt={`${service.title} - ${service.description}`} // SEO amélioré
                                 width={85}
                                 height={40}

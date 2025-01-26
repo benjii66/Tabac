@@ -4,6 +4,11 @@
     "title": "Gourdes de Noël actuellement en SOLDES",
     "description": "Nos gourdes festives, parfaites pour vos fêtes de fin d'année !",
     "image": "/assets/images/gourdes-noel.png",
+    "images": [
+      "/assets/images/gourdes-noel.png",
+      "/assets/images/gourdes-noel.png",
+      "/assets/images/gourdes-noel.png"
+    ],
     "date": "2025-01-18",
     "details": "Découvrez nos nouvelles gourdes aux designs festifs. Réutilisables et écologiques, elles sont parfaites pour offrir ou pour profiter de vos boissons chaudes préférées pendant les fêtes."
   },
