@@ -67,27 +67,17 @@ export default function ManageNews() {
 
     useEffect(() => {
         if (formMessage) {
-            const timer = setTimeout(() => {
-                setFormMessage(null);
-            }, 2000); // Disparaît après 5 secondes
-
-            return () => clearTimeout(timer); // Nettoyage
+            const timer = setTimeout(() => setFormMessage(null), 2000);
+            return () => clearTimeout(timer);
         }
     }, [formMessage]);
 
 
-
-
     const validateNewsForm = (news: News | null): boolean => {
-        if (!news) {
-            setFormError("Le formulaire est vide.");
+        if (!news?.title || !news.description || !news.details || !news.date) {
+            setFormMessage({ type: "error", text: "Tous les champs obligatoires doivent être remplis." });
             return false;
         }
-        if (!news.title || !news.description || !news.details || !news.date) {
-            setFormError("Tous les champs obligatoires doivent être remplis.");
-            return false;
-        }
-        setFormError(null); // Réinitialise les erreurs si tout est valide
         return true;
     };
 
@@ -99,23 +89,14 @@ export default function ManageNews() {
         setNewNews(null);
         setEditingNews(null);
         setFormMessage(null);
-        setRemovedImages([]); // Réinitialiser les images supprimées
-        resetErrors();
-    };
-
-    const resetErrors = () => {
+        setRemovedImages([]);
         setPreviewImage("");
         setPreviewImagesMultiple([]);
     };
 
 
     const handleAddNews = async () => {
-        if (!newNews) return;
-
-        if (!validateNewsForm(newNews)) {
-            setFormMessage({ type: "error", text: "Tous les champs obligatoires doivent être remplis." });
-            return;
-        }
+        if (!newNews || !validateNewsForm(newNews)) return;
 
         try {
             const formData = new FormData();
@@ -140,90 +121,57 @@ export default function ManageNews() {
 
             setNews((prev) => [...prev, response.data]);
             setFormMessage({ type: "success", text: "Nouvelle ajoutée avec succès !" });
-
-            // Réinitialiser l'état après 2 secondes
-            setTimeout(() => {
-                resetState();
-            }, 2000);
-        } catch (error: any) {
-            console.error("Erreur lors de l'ajout de la nouvelle :", error);
-            setFormMessage({
-                type: "error",
-                text: error.response?.data || "Erreur interne du serveur lors de l'ajout.",
-            });
+            setTimeout(resetState, 2000);
+        } catch (error) {
+            console.error("Erreur lors de l'ajout :", error);
+            setFormMessage({ type: "error", text: "Erreur lors de l'ajout de l'actualité." });
         }
     };
 
     //modifier une mauvaise image
     const handleRemoveMultipleImage = (index: number) => {
-        setEditingNews((prevNews) => {
-            if (!prevNews) {
-                console.log("Aucune actualité en cours d'édition.");
-                return null;
-            }
-
-            const updatedImages = [...prevNews.images];
-            const [removedImage] = updatedImages.splice(index, 1);
-
-            if (removedImage) {
-                console.log(`Image instanciée dans la liste à supprimer :`, removedImage);
-            } else {
-                console.log(`Aucune image n'a été trouvée à l'index ${index}`);
-            }
-
-            // Si c'est une image existante (string), ajoute-la à removedImages
-            if (typeof removedImage === "string" && !removedImages.includes(removedImage)) {
-                setRemovedImages((prev) => {
-                    const updatedRemovedImages = [...prev, removedImage];
-                    console.log("Liste mise à jour des images à supprimer :", updatedRemovedImages);
-                    return updatedRemovedImages;
-                });
-            }
-
-
-            console.log("Images restantes après suppression :", updatedImages);
-
-            return {
-                ...prevNews,
-                images: updatedImages,
-            };
-        });
+        if (newNews) {
+            setNewNews((prev) => {
+                if (!prev) return null;
+                const updatedImages = prev.images.filter((_, i) => i !== index);
+                const updatedPreviews = previewImagesMultiple.filter((_, i) => i !== index);
+                setPreviewImagesMultiple(updatedPreviews);
+                return { ...prev, images: updatedImages };
+            });
+        } else if (editingNews) {
+            setEditingNews((prev) => {
+                if (!prev) return null;
+                const updatedImages = prev.images.filter((_, i) => i !== index);
+                const removedImage = prev.images[index];
+                if (typeof removedImage === "string" && !removedImages.includes(removedImage)) {
+                    setRemovedImages((prev) => [...prev, removedImage]);
+                }
+                const updatedPreviews = previewImagesMultiple.filter((_, i) => i !== index);
+                setPreviewImagesMultiple(updatedPreviews);
+                return { ...prev, images: updatedImages };
+            });
+        }
     };
 
     const handleAddMultipleImages = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             const files = Array.from(event.target.files);
             const previews = files.map((file) => URL.createObjectURL(file));
-
-            console.log("Fichiers ajoutés :", files);
-
-            // Ajouter les nouvelles images aux prévisualisations existantes
             setPreviewImagesMultiple((prev) => [...prev, ...previews]);
 
-            // Ajouter les fichiers aux fichiers existants
             if (editingNews) {
                 setEditingNews((prev) => {
                     if (!prev) return null;
-                    const updatedImages = [...prev.images, ...files];
-                    console.log("Images mises à jour dans la modification :", updatedImages);
-                    return {
-                        ...prev,
-                        images: updatedImages, // Ajoute les nouvelles images à celles existantes
-                    };
+                    return { ...prev, images: [...prev.images, ...files] };
                 });
             } else if (newNews) {
                 setNewNews((prev) => {
                     if (!prev) return null;
-                    return {
-                        ...prev,
-                        images: [...(prev.images || []), ...files],
-                    };
+                    return { ...prev, images: [...prev.images, ...files] };
                 });
             }
         }
     };
-
-
 
     // Supprimer une actualité
     const handleDelete = async () => {
@@ -231,19 +179,12 @@ export default function ManageNews() {
 
         try {
             await axios.delete("/api/news", { data: { id: newsToDelete.id } });
-
-            // Supprimer l'élément de la liste
             setNews((prev) => prev.filter((item) => item.id !== newsToDelete.id));
-
-            // Réinitialiser les états
             setNewsToDelete(null);
             setFormMessage({ type: "success", text: "Actualité supprimée avec succès !" });
         } catch (error) {
             console.error("Erreur lors de la suppression :", error);
-            setFormMessage({
-                type: "error",
-                text: "Erreur lors de la suppression de l'actualité.",
-            });
+            setFormMessage({ type: "error", text: "Erreur lors de la suppression." });
         }
     };
 
@@ -256,9 +197,6 @@ export default function ManageNews() {
         if (!editingNews) return;
 
         try {
-            console.log("Liste des images supprimées :", removedImages); // Log des images supprimées
-            console.log("Images avant envoi :", editingNews.images); // Log des images en cours
-
             const formData = new FormData();
             formData.append("id", editingNews.id.toString());
             formData.append("title", editingNews.title);
@@ -271,22 +209,14 @@ export default function ManageNews() {
                 formData.append("image", imageFile);
             }
 
-            // Log des images ajoutées et restantes
-            console.log("Images finales pour l'upload :", editingNews.images);
-
-            // Ajouter les images restantes après suppression
             editingNews.images.forEach((image, index) => {
                 if (image instanceof File) {
-                    console.log(`Ajout d'une image fichier dans FormData :`, image);
                     formData.append(`images[${index}]`, image);
                 } else if (!removedImages.includes(image as string)) {
-                    console.log(`Ajout d'une image existante dans FormData :`, image);
                     formData.append(`existingImages[${index}]`, image);
                 }
             });
 
-
-            // Ajouter les images supprimées
             formData.append("removedImages", JSON.stringify(removedImages));
 
             const response = await axios.put("/api/news", formData, {
@@ -296,27 +226,13 @@ export default function ManageNews() {
             setNews((prev) =>
                 prev.map((news) => (news.id === editingNews.id ? response.data : news))
             );
-            console.log("Données reçues après sauvegarde :", response.data);
-
-
             setFormMessage({ type: "success", text: "Modification effectuée avec succès !" });
-            setTimeout(() => resetState(), 2000);
+            setTimeout(resetState, 2000);
         } catch (error) {
             console.error("Erreur lors de la sauvegarde :", error);
-            setFormMessage({ type: "error", text: "Erreur lors de la mise à jour de l'actualité." });
+            setFormMessage({ type: "error", text: "Erreur lors de la modification." });
         }
     };
-
-
-    const resetForm = () => {
-        if (previewImage) URL.revokeObjectURL(previewImage);
-        previewImagesMultiple.forEach((url) => URL.revokeObjectURL(url));
-        setPreviewImage("");
-        setPreviewImagesMultiple([]);
-        setNewNews(null); // Ferme la modale après réinitialisation
-        setFormMessage(null); // Réinitialise les messages
-    };
-
 
     return (
 
@@ -545,7 +461,6 @@ export default function ManageNews() {
                                     onChange={handleAddMultipleImages}
                                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                 />
-
 
                                 <div className="grid grid-cols-3 gap-4 mt-4">
                                     {previewImagesMultiple.map((image, index) => (

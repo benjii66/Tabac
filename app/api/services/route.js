@@ -1,31 +1,28 @@
 import fs from "fs/promises";
 import path from "path";
 
-// Chemin vers le fichier JSON et dossier des images
+// Chemins vers le fichier JSON et le dossier des images
 const filePath = path.join(process.cwd(), "data", "services.json");
 const uploadDir = path.join(process.cwd(), "public", "assets", "images");
 
 // Fonction pour sauvegarder une image
 async function saveImage(file) {
-  if (!file || !(file instanceof File)) {
-    throw new Error("Le fichier n'est pas valide");
+  if (!(file instanceof File)) {
+    throw new Error("Le fichier n'est pas valide.");
   }
 
   const fileName = file.name;
-  const filePath = path.join(uploadDir, fileName);
   const fileBuffer = Buffer.from(await file.arrayBuffer());
+  const imagePath = path.join(uploadDir, fileName);
 
-  // Créer le répertoire si nécessaire
+  // Créer le répertoire si nécessaire et sauvegarder l'image
   await fs.mkdir(uploadDir, { recursive: true });
+  await fs.writeFile(imagePath, fileBuffer);
 
-  // Sauvegarder l'image
-  await fs.writeFile(filePath, fileBuffer);
-
-  // Retourner le chemin de l'image
   return `/assets/images/${fileName}`;
 }
 
-// Route GET
+// Route GET : Récupérer tous les services
 export async function GET() {
   try {
     const data = await fs.readFile(filePath, "utf-8");
@@ -36,11 +33,10 @@ export async function GET() {
   }
 }
 
-// Route POST : Ajouter un nouveau service
+// Route POST : Ajouter un service
 export async function POST(request) {
   try {
     const formData = await request.formData();
-
     const title = formData.get("title");
     const description = formData.get("description");
     const details = formData.get("details");
@@ -50,30 +46,24 @@ export async function POST(request) {
       return new Response("Données obligatoires manquantes", { status: 400 });
     }
 
-    // Gestion de l'image principale
-    let mainImagePath = "/assets/images/placeholder.svg";
-    if (mainImage && mainImage instanceof File) {
-      mainImagePath = await saveImage(mainImage);
-    }
+    // Sauvegarde de l'image principale
+    const mainImagePath =
+      mainImage instanceof File
+        ? await saveImage(mainImage)
+        : "/assets/images/placeholder.svg";
 
-    // Gestion des images multiples
-    const imagesPaths = [];
-    const imageKeys = Array.from(formData.keys()).filter((key) =>
-      key.startsWith("images[")
-    );
+    // Sauvegarde des images multiples
+    const imagesPaths = await Promise.all(
+      Array.from(formData.keys())
+        .filter((key) => key.startsWith("images["))
+        .map(async (key) => {
+          const file = formData.get(key);
+          return file instanceof File ? await saveImage(file) : null;
+        })
+    ).then((paths) => paths.filter(Boolean)); // Filtre les valeurs nulles
 
-    for (const key of imageKeys) {
-      const file = formData.get(key);
-      if (file instanceof File) {
-        const newImagePath = await saveImage(file);
-        imagesPaths.push(newImagePath);
-      }
-    }
-
-    // Charger les services existants
+    // Charger les services existants et ajouter le nouveau service
     const data = JSON.parse(await fs.readFile(filePath, "utf-8"));
-
-    // Créer un nouveau service
     const newService = {
       id: Date.now(),
       title,
@@ -83,13 +73,12 @@ export async function POST(request) {
       images: imagesPaths,
     };
 
-    // Ajouter et sauvegarder
     data.push(newService);
     await fs.writeFile(filePath, JSON.stringify(data, null, 2));
 
     return new Response(JSON.stringify(newService), { status: 201 });
   } catch (error) {
-    console.error("Erreur lors de l'ajout d'un service :", error);
+    console.error("Erreur lors de l'ajout du service :", error);
     return new Response("Erreur interne du serveur", { status: 500 });
   }
 }
@@ -98,7 +87,6 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     const formData = await request.formData();
-
     const id = formData.get("id");
     const title = formData.get("title");
     const description = formData.get("description");
@@ -109,54 +97,52 @@ export async function PUT(request) {
       return new Response("Données obligatoires manquantes", { status: 400 });
     }
 
-    // Charger les services existants
+    // Charger les services existants et trouver le service à modifier
     const data = JSON.parse(await fs.readFile(filePath, "utf-8"));
-    const index = data.findIndex((service) => service.id === parseInt(id, 10));
+    const serviceIndex = data.findIndex(
+      (service) => service.id === parseInt(id, 10)
+    );
 
-    if (index === -1) {
+    if (serviceIndex === -1) {
       return new Response("Service introuvable", { status: 404 });
     }
 
-    // Gestion des images multiples
-    let existingImages = data[index].images.filter(
+    const service = data[serviceIndex];
+
+    // Mettre à jour les images multiples
+    const updatedImages = service.images.filter(
       (img) => !removedImages.includes(img)
     );
-    const imageKeys = Array.from(formData.keys()).filter((key) =>
-      key.startsWith("images[")
-    );
+    const newImages = await Promise.all(
+      Array.from(formData.keys())
+        .filter((key) => key.startsWith("images["))
+        .map(async (key) => {
+          const file = formData.get(key);
+          return file instanceof File ? await saveImage(file) : null;
+        })
+    ).then((paths) => paths.filter(Boolean));
 
-    for (const key of imageKeys) {
-      const file = formData.get(key);
-      if (file instanceof File) {
-        const newImagePath = await saveImage(file);
-        existingImages.push(newImagePath);
-      }
-    }
-
-    // Gestion de l'image principale (si modifiée)
+    // Mettre à jour l'image principale (si modifiée)
     const mainImageFile = formData.get("image");
-    let mainImagePath = data[index].image;
+    const mainImagePath =
+      mainImageFile instanceof File
+        ? await saveImage(mainImageFile)
+        : service.image;
 
-    if (mainImageFile instanceof File) {
-      mainImagePath = await saveImage(mainImageFile);
-    }
-
-    // Mettre à jour le service
-    data[index] = {
-      ...data[index],
+    // Mise à jour des données
+    data[serviceIndex] = {
+      ...service,
       title,
       description,
       details,
       image: mainImagePath,
-      images: existingImages,
+      images: [...updatedImages, ...newImages],
     };
 
-    // Sauvegarder
     await fs.writeFile(filePath, JSON.stringify(data, null, 2));
-
-    return new Response(JSON.stringify(data[index]), { status: 200 });
+    return new Response(JSON.stringify(data[serviceIndex]), { status: 200 });
   } catch (error) {
-    console.error("Erreur lors de la modification :", error);
+    console.error("Erreur lors de la modification du service :", error);
     return new Response("Erreur interne du serveur", { status: 500 });
   }
 }
@@ -166,17 +152,16 @@ export async function DELETE(request) {
   try {
     const { id } = await request.json();
 
-    // Charger les services existants
+    // Charger les services existants et filtrer le service à supprimer
     const data = JSON.parse(await fs.readFile(filePath, "utf-8"));
     const updatedData = data.filter(
       (service) => service.id !== parseInt(id, 10)
     );
 
-    // Sauvegarder les modifications
     await fs.writeFile(filePath, JSON.stringify(updatedData, null, 2));
     return new Response("Service supprimé", { status: 200 });
   } catch (error) {
-    console.error("Erreur lors de la suppression :", error);
+    console.error("Erreur lors de la suppression du service :", error);
     return new Response("Erreur interne du serveur", { status: 500 });
   }
 }

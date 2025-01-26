@@ -29,13 +29,12 @@ export default function ManageServices() {
             try {
                 const response = await axios.get("/api/services");
                 setServices(response.data);
-            } catch (error) {
-                console.error("Erreur lors de la récupération des services :", error);
+            } catch {
+                setFormMessage({ type: "error", text: "Erreur de chargement des services." });
             } finally {
                 setLoading(false);
             }
         };
-
         fetchServices();
     }, []);
 
@@ -72,14 +71,10 @@ export default function ManageServices() {
             formData.append("description", newService.description);
             formData.append("details", newService.details);
 
-            if (newService.image instanceof File) {
-                formData.append("image", newService.image);
-            }
+            if (newService.image instanceof File) formData.append("image", newService.image);
 
             newService.images.forEach((img, index) => {
-                if (img instanceof File) {
-                    formData.append(`images[${index}]`, img);
-                }
+                if (img instanceof File) formData.append(`images[${index}]`, img);
             });
 
             const response = await axios.post("/api/services", formData, {
@@ -89,9 +84,8 @@ export default function ManageServices() {
             setServices((prev) => [...prev, response.data]);
             setFormMessage({ type: "success", text: "Service ajouté avec succès !" });
             resetState();
-        } catch (error) {
-            console.error("Erreur lors de l'ajout du service :", error);
-            setFormMessage({ type: "error", text: "Erreur interne du serveur." });
+        } catch {
+            setFormMessage({ type: "error", text: "Erreur lors de l'ajout du service." });
         }
     };
 
@@ -105,14 +99,10 @@ export default function ManageServices() {
             formData.append("description", editingService.description);
             formData.append("details", editingService.details);
 
-            if (editingService.image instanceof File) {
-                formData.append("image", editingService.image);
-            }
+            if (editingService.image instanceof File) formData.append("image", editingService.image);
 
             editingService.images.forEach((img, index) => {
-                if (img instanceof File) {
-                    formData.append(`images[${index}]`, img);
-                }
+                if (img instanceof File) formData.append(`images[${index}]`, img);
             });
 
             formData.append("removedImages", JSON.stringify(removedImages));
@@ -126,9 +116,8 @@ export default function ManageServices() {
             );
             setFormMessage({ type: "success", text: "Service modifié avec succès !" });
             resetState();
-        } catch (error) {
-            console.error("Erreur lors de la modification du service :", error);
-            setFormMessage({ type: "error", text: "Erreur interne du serveur." });
+        } catch {
+            setFormMessage({ type: "error", text: "Erreur lors de la modification du service." });
         }
     };
 
@@ -140,9 +129,8 @@ export default function ManageServices() {
             setServices((prev) => prev.filter((service) => service.id !== serviceToDelete.id));
             setFormMessage({ type: "success", text: "Service supprimé avec succès !" });
             setServiceToDelete(null);
-        } catch (error) {
-            console.error("Erreur lors de la suppression du service :", error);
-            setFormMessage({ type: "error", text: "Erreur interne du serveur." });
+        } catch {
+            setFormMessage({ type: "error", text: "Erreur lors de la suppression du service." });
         }
     };
 
@@ -184,6 +172,7 @@ export default function ManageServices() {
                 </div>
             </header>
 
+            {/* Liste des services */}
             <div className="container mx-auto py-8 px-4">
                 <section className="bg-white p-6 rounded-lg shadow-md">
                     <div className="flex justify-between items-center mb-4">
@@ -230,7 +219,7 @@ export default function ManageServices() {
                                                         : URL.createObjectURL(service.image)
                                                 }
                                                 alt={service.title}
-                                                className="w-32 h-32 object-cover rounded mb-2"
+                                                className="w-32 h-32 object-cover rounded"
                                             />
                                         </td>
                                         <td className="border border-gray-300 px-4 py-2">
@@ -239,7 +228,9 @@ export default function ManageServices() {
                                                     <img
                                                         key={index}
                                                         src={
-                                                            typeof img === "string" ? img : URL.createObjectURL(img)
+                                                            typeof img === "string"
+                                                                ? img
+                                                                : URL.createObjectURL(img)
                                                         }
                                                         alt={`Image ${index + 1}`}
                                                         className="w-12 h-12 object-cover rounded"
@@ -253,7 +244,7 @@ export default function ManageServices() {
                                         <td className="border border-gray-300 px-4 py-2">
                                             <button
                                                 onClick={() => setEditingService(service)}
-                                                className="bg-yellow-500 px-4 py-2 rounded text-white mb-1"
+                                                className="bg-yellow-500 px-4 py-2 rounded text-white"
                                             >
                                                 Modifier
                                             </button>
@@ -271,6 +262,7 @@ export default function ManageServices() {
                     )}
                 </section>
             </div>
+
             <AnimatePresence>
                 {newService && (
                     <motion.div
