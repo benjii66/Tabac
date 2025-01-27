@@ -5,31 +5,23 @@ import Image from 'next/image';
 
 export default function AccessibilityMenu() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isDyslexiaActive, setIsDyslexiaActive] = useState(false);
-    const [isHighContrastActive, setIsHighContrastActive] = useState(false);
-    const [isNightModeActive, setIsNightModeActive] = useState(false);
+    const [accessibilityOptions, setAccessibilityOptions] = useState({
+        dyslexia: false,
+        highContrast: false,
+        nightMode: false,
+    });
 
     // Ouvrir/fermer le menu
     const toggleAccessibilityMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
+        setIsMenuOpen((prev) => !prev);
     };
 
-    // Activer/Desactiver la police Dyslexie
-    const toggleDyslexiaFont = () => {
-        document.body.classList.toggle('font-dyslexia');
-        setIsDyslexiaActive(!isDyslexiaActive);
-    };
+    // Gérer les options d'accessibilité
+    const toggleOption = (option: keyof typeof accessibilityOptions) => {
+        const updatedOptions = { ...accessibilityOptions, [option]: !accessibilityOptions[option] };
 
-    // Activer/Desactiver le mode Contraste eleve
-    const toggleHighContrast = () => {
-        document.body.classList.toggle('high-contrast');
-        setIsHighContrastActive(!isHighContrastActive);
-    };
-
-    // Activer/Desactiver le mode Nuit
-    const toggleNightMode = () => {
-        document.body.classList.toggle('night-mode');
-        setIsNightModeActive(!isNightModeActive);
+        setAccessibilityOptions(updatedOptions);
+        document.body.classList.toggle(option, updatedOptions[option]);
     };
 
     return (
@@ -38,12 +30,13 @@ export default function AccessibilityMenu() {
             <div className="fixed bottom-4 right-4 z-50">
                 <button
                     onClick={toggleAccessibilityMenu}
-                    aria-label={isMenuOpen ? "Fermer le menu d'accessibilite" : "Ouvrir le menu d'accessibilite"}
-                    className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+                    aria-label={isMenuOpen ? "Fermer le menu d'accessibilité" : "Ouvrir le menu d'accessibilité"}
+                    aria-expanded={isMenuOpen}
+                    className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                     <Image
                         src="/assets/logo/eye.ico"
-                        alt="Icône menu d'accessibilite"
+                        alt="Icône d'accessibilité"
                         width={24}
                         height={24}
                         className="w-6 h-6"
@@ -52,75 +45,68 @@ export default function AccessibilityMenu() {
                 </button>
             </div>
 
-            {/* Menu d'accessibilite */}
-            <div
-                className={`fixed top-0 right-0 h-full bg-black text-white shadow-lg transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-                    } transition-transform duration-300`}
-                style={{ width: '80%', maxWidth: '320px' }} // Ajustement responsive
+            {/* Menu d'accessibilité */}
+            <nav
+                className={`fixed top-0 right-0 h-full bg-black text-white shadow-lg transform transition-transform duration-300 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                style={{ width: '80%', maxWidth: '320px' }}
+                role="menu"
+                aria-hidden={!isMenuOpen}
             >
                 <div className="p-4">
-                    <h2 className="text-xl font-bold mb-4">Accessibilite</h2>
-                    <p className="text-sm mb-6">
-                        Adaptez ce site selon vos besoins.
-                    </p>
+                    <h2 className="text-xl font-bold mb-4">Accessibilité</h2>
+                    <p className="text-sm mb-6">Adaptez ce site selon vos besoins.</p>
 
                     <ul className="space-y-4">
                         <li>
                             <button
-                                onClick={toggleDyslexiaFont}
-                                className={`w-full text-left p-3 rounded transition ${isDyslexiaActive
-                                    ? 'bg-white text-blue-400'
-                                    : 'bg-gray-800 hover:bg-gray-700 text-white'
-                                    }`}
-                                aria-pressed={isDyslexiaActive}
+                                onClick={() => toggleOption('dyslexia')}
+                                className={`w-full text-left p-3 rounded transition ${accessibilityOptions.dyslexia ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'}`}
+                                aria-pressed={accessibilityOptions.dyslexia}
+                                role="menuitem"
                             >
-                                {isDyslexiaActive
-                                    ? 'Desactiver la police Dyslexie'
+                                {accessibilityOptions.dyslexia
+                                    ? 'Désactiver la police Dyslexie'
                                     : 'Activer la police Dyslexie'}
                             </button>
                         </li>
                         <li>
                             <button
-                                onClick={toggleHighContrast}
-                                className={`w-full text-left p-3 rounded transition ${isHighContrastActive
-                                    ? 'bg-white text-blue-400'
-                                    : 'bg-gray-800 hover:bg-gray-700 text-white'
-                                    }`}
-                                aria-pressed={isHighContrastActive}
+                                onClick={() => toggleOption('highContrast')}
+                                className={`w-full text-left p-3 rounded transition ${accessibilityOptions.highContrast ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'}`}
+                                aria-pressed={accessibilityOptions.highContrast}
+                                role="menuitem"
                             >
-                                {isHighContrastActive
-                                    ? 'Desactiver le Contraste eleve'
-                                    : 'Activer le Contraste eleve'}
+                                {accessibilityOptions.highContrast
+                                    ? 'Désactiver le Contraste élevé'
+                                    : 'Activer le Contraste élevé'}
                             </button>
                         </li>
                         <li>
                             <button
-                                onClick={toggleNightMode}
-                                className={`w-full text-left p-3 rounded transition ${isNightModeActive
-                                    ? 'bg-white text-blue-400'
-                                    : 'bg-gray-800 hover:bg-gray-700 text-white'
-                                    }`}
-                                aria-pressed={isNightModeActive}
+                                onClick={() => toggleOption('nightMode')}
+                                className={`w-full text-left p-3 rounded transition ${accessibilityOptions.nightMode ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'}`}
+                                aria-pressed={accessibilityOptions.nightMode}
+                                role="menuitem"
                             >
-                                {isNightModeActive
-                                    ? 'Desactiver le Mode Nuit'
+                                {accessibilityOptions.nightMode
+                                    ? 'Désactiver le Mode Nuit'
                                     : 'Activer le Mode Nuit'}
                             </button>
                         </li>
                     </ul>
                 </div>
 
-                {/* Ajout d'un bouton pour fermer le menu */}
+                {/* Bouton pour fermer le menu */}
                 <div className="text-center mt-6">
                     <button
                         onClick={toggleAccessibilityMenu}
-                        className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
-                        aria-label="Fermer le menu d'accessibilite"
+                        className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-gray-400"
+                        aria-label="Fermer le menu d'accessibilité"
                     >
                         Fermer le menu
                     </button>
                 </div>
-            </div>
+            </nav>
         </>
     );
 }

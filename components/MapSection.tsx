@@ -3,13 +3,35 @@
 import { motion } from 'framer-motion';
 
 export default function MapSection() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    "name": "Tabac Presse Le Soler",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "46 rue des Orangers",
+      "addressLocality": "Le Soler",
+      "postalCode": "66270",
+      "addressCountry": "FR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 42.6939, // Coordonnées approximatives
+      "longitude": 2.8347
+    },
+    "telephone": "+33468738659"
+  };
+
   return (
-    <section
-      className="py-16 bg-white"
-      aria-labelledby="map-title"
-    >
+    <section className="py-16 bg-white" aria-labelledby="map-title">
       <div className="container mx-auto px-4">
-        {/* Section de titre et adresse */}
+        {/* Données structurées pour le SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        ></script>
+
+        {/* Titre et adresse */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -54,11 +76,11 @@ export default function MapSection() {
           Nous Contacter
         </h2>
         <p className="text-gray-600 text-sm sm:text-base">
-          Telephone :{' '}
+          Téléphone :{' '}
           <a
-            href="tel:0468738659"
+            href="tel:+33468738659"
             className="text-blue-600 hover:underline"
-            aria-label="Numero de telephone du Tabac Presse Le Soler"
+            aria-label="Numéro de téléphone du Tabac Presse Le Soler"
           >
             04 68 73 86 59
           </a>

@@ -35,8 +35,43 @@ export default function Services() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Données JSON-LD pour les services
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Services du Tabac Presse Le Soler",
+    description:
+      "Découvrez les services proposés par le Tabac Presse Le Soler : jeux, presse, produits locaux, maroquinerie, et bien plus.",
+    provider: {
+      "@type": "LocalBusiness",
+      name: "Tabac Presse Le Soler",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "46 rue des Orangers",
+        addressLocality: "Le Soler",
+        postalCode: "66270",
+        addressCountry: "FR",
+      },
+    },
+    serviceType: "Tabac, Presse, Jeux, Produits Locaux",
+    areaServed: {
+      "@type": "Place",
+      name: "Le Soler et alentours",
+    },
+  };
+
   return (
-    <section className="py-16 bg-stone-100" aria-labelledby="services-title">
+    <section
+      className="py-16 bg-stone-100"
+      aria-labelledby="services-title"
+      id="services"
+    >
+      {/* Métadonnées JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
       <div className="container mx-auto px-4">
         <h2
           id="services-title"
@@ -49,6 +84,7 @@ export default function Services() {
           quotidiens.
         </p>
 
+        {/* Affichage des services pour mobile ou desktop */}
         {isMobile ? (
           <ServicesMobile onSelectService={setSelectedService} />
         ) : (
@@ -78,7 +114,7 @@ export default function Services() {
                 ✕
               </button>
 
-              {/* Carousel des images multiples */}
+              {/* Carrousel des images multiples */}
               <Swiper
                 modules={[Navigation, Pagination]}
                 navigation={{
@@ -95,7 +131,7 @@ export default function Services() {
                     <SwiperSlide key={index}>
                       <img
                         src={img}
-                        alt={`Image ${index + 1} du service`}
+                        alt={`Image ${index + 1} du service ${selectedService.title}`}
                         className="w-full h-40 object-cover rounded-lg"
                       />
                     </SwiperSlide>
@@ -104,7 +140,7 @@ export default function Services() {
                   <SwiperSlide>
                     <img
                       src={selectedService.image}
-                      alt={selectedService.title}
+                      alt={`Image principale du service ${selectedService.title}`}
                       className="w-full h-40 object-cover rounded-lg"
                     />
                   </SwiperSlide>
@@ -145,6 +181,7 @@ export default function Services() {
                 </svg>
               </div>
 
+              {/* Contenu textuel du service */}
               <h3 className="text-xl font-bold mb-2">{selectedService.title}</h3>
               <p className="text-sm text-gray-600 mb-4">
                 {selectedService.description}

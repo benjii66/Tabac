@@ -13,17 +13,17 @@ interface OpeningHour {
 export default function OpeningHours() {
   const [openingHours, setOpeningHours] = useState<OpeningHour[]>([]);
 
-  // Fonction pour récupérer les horaires via l'API
+  // Récupération des horaires via l'API
   useEffect(() => {
     const fetchOpeningHours = async () => {
       try {
         const response = await axios.get("/api/openingHours");
         console.log("Horaires récupérés :", response.data); // Debug des données
         if (Array.isArray(response.data)) {
-          setOpeningHours(response.data); // Assigne uniquement si c'est un tableau
+          setOpeningHours(response.data);
         } else {
           console.error("Les données reçues ne sont pas un tableau :", response.data);
-          setOpeningHours([]); // Par défaut, on assigne un tableau vide
+          setOpeningHours([]);
         }
       } catch (error) {
         console.error("Erreur lors de la récupération des horaires :", error);
@@ -33,10 +33,32 @@ export default function OpeningHours() {
     fetchOpeningHours();
   }, []);
 
+  // Données structurées pour le SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "Tabac Presse Le Soler",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "46 Rue des Orangers",
+      addressLocality: "Le Soler",
+      postalCode: "66270",
+      addressCountry: "FR",
+    },
+    openingHoursSpecification: openingHours.map((item) => ({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: item.day,
+      opens: item.hours.split("-")[0]?.trim(),
+      closes: item.hours.split("-")[1]?.trim(),
+    })),
+    url: "https://tabaclesoler.fr/horaires",
+  };
+
   return (
     <section
       className="py-12 sm:py-16 bg-white"
       aria-labelledby="opening-hours-title"
+      id="horaires"
     >
       <div className="container mx-auto px-4">
         {/* Titre de la section */}
