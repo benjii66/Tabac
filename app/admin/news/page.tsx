@@ -119,14 +119,16 @@ export default function ManageNews() {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
-            setNews((prev) => [...prev, response.data]);
+            setNews((prev) => [response.data, ...prev]); // ✅ Ajoute directement la news au state
             setFormMessage({ type: "success", text: "Nouvelle ajoutée avec succès !" });
-            setTimeout(resetState, 2000);
+
+            resetState(); // ✅ Reset immédiat sans délai
         } catch (error) {
             console.error("Erreur lors de l'ajout :", error);
             setFormMessage({ type: "error", text: "Erreur lors de l'ajout de l'actualité." });
         }
     };
+
 
     //modifier une mauvaise image
     const handleRemoveMultipleImage = (index: number) => {
