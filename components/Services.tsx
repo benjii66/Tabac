@@ -6,6 +6,11 @@ import ServicesDesktop from "./ServicesDesktop";
 import { AnimatePresence, motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
+
+import axios from "axios";
+import cld from "../config/cloudinaryConfig"; // 🔥 Import de Cloudinary
+import { fill } from "@cloudinary/url-gen/actions/resize";
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -22,6 +27,26 @@ interface Service {
 export default function Services() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [services, setServices] = useState<Service[]>([]);
+
+  // Récupération des services
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get("/api/services");
+        console.log("Services après transformation :", response.data);
+        if (Array.isArray(response.data)) {
+          setServices(response.data);
+        } else {
+          console.error("Les données de l'API services ne sont pas un tableau :", response.data);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des services :", error);
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   // Détecter la taille de l'écran
   useEffect(() => {
@@ -31,7 +56,6 @@ export default function Services() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -86,9 +110,9 @@ export default function Services() {
 
         {/* Affichage des services pour mobile ou desktop */}
         {isMobile ? (
-          <ServicesMobile onSelectService={setSelectedService} />
+           <ServicesMobile services={services} onSelectService={setSelectedService} />
         ) : (
-          <ServicesDesktop onSelectService={setSelectedService} />
+          <ServicesMobile services={services} onSelectService={setSelectedService} />
         )}
       </div>
 

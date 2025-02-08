@@ -3,11 +3,10 @@
     "id": 1,
     "title": "Gourdes de Noël actuellement en SOLDES",
     "description": "Nos gourdes festives, parfaites pour vos fêtes de fin d'année !",
-    "image": "/assets/images/gourdes-noel.png",
+    "image": "https://res.cloudinary.com/dchckbio5/image/upload/tabac/2bf7c21c8808f481549e599e1e9fb8c6.png",
     "images": [
-      "/assets/images/gourdes-noel.png",
-      "/assets/images/gourdes-noel.png",
-      "/assets/images/gourdes-noel.png"
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/2bda7143daba1d5e1cb733a74e151227.png",
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/6244caf40d702e04c111ce08b35a01fe.jpg"
     ],
     "date": "2025-01-18",
     "details": "Découvrez nos nouvelles gourdes aux designs festifs. Réutilisables et écologiques, elles sont parfaites pour offrir ou pour profiter de vos boissons chaudes préférées pendant les fêtes."
@@ -16,7 +15,7 @@
     "id": 3,
     "title": "Nouvelle E-cigarette Elfbar",
     "description": "Pouvant contenir 4 pods de goûts différents selon l'envie !",
-    "image": "/assets/images/nouvel_article.jpg",
+    "image": "https://res.cloudinary.com/dchckbio5/image/upload/tabac/nouvel_article.jpg",
     "date": "2025-01-22",
     "details": "Recharges disponibles en magasin avec tous les différents goûts."
   }

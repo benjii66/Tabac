@@ -3,31 +3,31 @@
     "id": 1,
     "title": "Vape",
     "description": "Explorez notre vaste sélection de CBD et e-liquides !",
-    "image": "/assets/images/vape.jpg",
+    "image": "https://res.cloudinary.com/dchckbio5/image/upload/tabac/vape.jpg",
     "details": "Découvrez notre sélection de produits CBD, conformes aux normes françaises, et nos e-liquides, régulièrement renouvelés pour offrir toujours plus de goûts et de saveurs.",
     "images": [
-      "/assets/images/gourdes-noel.png",
-      "/assets/images/gourdes-noel.png",
-      "/assets/images/gourdes-noel.png"
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/maroro.jpg",
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/vape.jpg",
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg"
     ]
   },
   {
     "id": 2,
     "title": "Maroquinerie",
     "description": "Des petits sacs à mains, vêtements et accessoires",
-    "image": "/assets/images/maroro.jpg",
+    "image": "https://res.cloudinary.com/dchckbio5/image/upload/tabac/maroro.jpg",
     "details": "Une collection exclusive de maroquinerie : sacs à main, portefeuilles, et accessoires, parfaits pour un style élégant et pratique, de bonnes idées cadeaux à petit prix.",
     "images": [
-      "/assets/images/gourdes-noel.png",
-      "/assets/images/gourdes-noel.png",
-      "/assets/images/gourdes-noel.png"
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg",
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg",
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg"
     ]
   },
   {
     "id": 3,
     "title": "Magasin",
     "description": "Rayons spacieux",
-    "image": "/assets/images/magas1.jpg",
+    "image": "https://res.cloudinary.com/dchckbio5/image/upload/tabac/magas1.jpg",
     "details": "Un espace magasin moderne et spacieux, offrant un large éventail de produits pour répondre à tous vos besoins quotidiens.",
     "images": []
   },
@@ -35,19 +35,19 @@
     "id": 4,
     "title": "Presse",
     "description": "Journaux et magazines",
-    "image": "/assets/images/presse.jpg",
+    "image": "https://res.cloudinary.com/dchckbio5/image/upload/tabac/presse.jpg",
     "details": "Retrouvez un large choix de journaux et magazines locaux et internationaux, pour rester informé ou profiter d’un moment de lecture détente.",
     "images": [
-      "/assets/images/gourdes-noel.png",
-      "/assets/images/gourdes-noel.png",
-      "/assets/images/gourdes-noel.png"
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg",
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg",
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg"
     ]
   },
   {
     "id": 5,
     "title": "Produits Locaux",
     "description": "Éveillez vos sens avec nos produits du terroir : chaque pièce un hommage à la tradition locale !",
-    "image": "/assets/images/bougies.jpg",
+    "image": "https://res.cloudinary.com/dchckbio5/image/upload/tabac/bougies.jpg",
     "details": "Vins élaborés au domaine Piquemal, parfums d'ambiance et bougies fabriqués à Argelès-Sur-Mer, et autres produits issus de l'artisanat local.",
     "images": []
   },
@@ -55,7 +55,7 @@
     "id": 6,
     "title": "Cigarettes Electroniques",
     "description": "Produits e-cigarettes",
-    "image": "/assets/images/ecig.jpg",
+    "image": "https://res.cloudinary.com/dchckbio5/image/upload/tabac/ecig.jpg",
     "details": "Notre gamme de cigarettes électroniques comprend les dernières technologies pour une expérience de vapotage agréable. Profitez également de nos e-liquides variés.",
     "images": []
   },
@@ -63,12 +63,12 @@
     "id": 7,
     "title": "Boissons",
     "description": "À boire et ça repart",
-    "image": "/assets/images/Frigo.jpg",
+    "image": "https://res.cloudinary.com/dchckbio5/image/upload/tabac/Frigo.jpg",
     "details": "Un large choix de boissons fraîches et chaudes : sodas, cafés, thés, et bien d’autres pour toutes vos envies.",
     "images": [
-      "/assets/images/gourdes-noel.png",
-      "/assets/images/gourdes-noel.png",
-      "/assets/images/gourdes-noel.png"
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg",
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg",
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg"
     ]
   }
 ]

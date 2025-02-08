@@ -9,6 +9,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
+
+import cld from "../config/cloudinaryConfig";
+import { fill } from "@cloudinary/url-gen/actions/resize";
+
 interface NewsItem {
   id: number;
   title: string;
@@ -22,6 +26,22 @@ interface NewsItem {
 export default function NewsSection() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+  // Vérifie si l'URL est déjà une image Cloudinary complète
+  const isCloudinaryUrl = (url: string) => url.includes("res.cloudinary.com");
+  // Fonction pour générer l'URL Cloudinary si ce n'est pas déjà une URL complète
+  const getCloudinaryImageUrl = (imageName?: string) => {
+    if (!imageName) return ""; // Évite les erreurs sur les images nulles ou undefined
+    if (isCloudinaryUrl(imageName)) return imageName; // Si c'est déjà une URL Cloudinary, ne rien modifier
+
+    const extractedName = imageName.split("/").pop(); // Récupère juste le nom du fichier
+    const formattedImageName = `tabac/${extractedName}`; // Ajoute le préfixe correct
+
+    console.log("✅ URL Cloudinary générée :", formattedImageName);
+
+    return cld.image(formattedImageName).resize(fill().width(400).height(300)).toURL();
+  };
+
+
 
   // Récupération des données
   useEffect(() => {
@@ -29,7 +49,14 @@ export default function NewsSection() {
       try {
         const response = await axios.get("/api/news");
         if (Array.isArray(response.data)) {
-          setNews(response.data);
+          const formattedNews = response.data.map((newsItem: NewsItem) => ({
+            ...newsItem,
+            image: getCloudinaryImageUrl(newsItem.image),
+            images: newsItem.images?.map((img) => getCloudinaryImageUrl(img)),
+          }));
+
+          console.log("News après transformation :", formattedNews);
+          setNews(formattedNews);
         } else {
           console.error("Les données de l'API ne sont pas un tableau :", response.data);
         }
@@ -56,7 +83,7 @@ export default function NewsSection() {
         datePublished: item.date,
         mainEntityOfPage: {
           "@type": "WebPage",
-          "@id": "https://tabaclesoler.fr", // Remplace par ton URL
+          "@id": "https://tabaclesoler.fr",
         },
       },
     })),
@@ -151,45 +178,14 @@ export default function NewsSection() {
               </button>
             </div>
           ) : (
-            <div
-              className={`${news.length < 3
-                ? "flex justify-center gap-6"
-                : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-                }`}
-            >
+            <div className={`${news.length < 3 ? "flex justify-center gap-6" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"}`}>
               {news.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer"
-                  onClick={() => setSelectedNews(item)}
-                  aria-label={`Afficher les détails de l'article : ${item.title}`}
-                >
-                  <img
-                    src={item.image}
-                    alt={`Image de l'article : ${item.title}`}
-                    className="w-full h-40 object-cover"
-                  />
+                <div key={item.id} className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer" onClick={() => setSelectedNews(item)}>
+                  <img src={item.image} alt={`Image de l'article : ${item.title}`} className="w-full h-40 object-cover" />
                   <div className="p-4">
-                    <h3
-                      className="text-lg font-bold text-gray-800"
-                      aria-label={`Titre de l'article : ${item.title}`}
-                    >
-                      {item.title}
-                    </h3>
-                    <p
-                      className="text-sm text-gray-600"
-                      aria-label={`Résumé de l'article : ${item.description}`}
-                    >
-                      {item.description}
-                    </p>
-                    <p
-                      className="text-xs text-gray-400 mt-2"
-                      aria-label={`Date de publication : ${new Date(
-                        item.date
-                      ).toLocaleDateString()}`}
-                    >
-                      Publié le : {new Date(item.date).toLocaleDateString()}
-                    </p>
+                    <h3 className="text-lg font-bold text-gray-800">{item.title}</h3>
+                    <p className="text-sm text-gray-600">{item.description}</p>
+                    <p className="text-xs text-gray-400 mt-2">Publié le : {new Date(item.date).toLocaleDateString()}</p>
                   </div>
                 </div>
               ))}
