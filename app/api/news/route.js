@@ -16,26 +16,26 @@ cloudinary.config({
 // Chemin vers le fichier JSON contenant les actualités
 const filePath = path.join(process.cwd(), "data", "news.json");
 
-// 🔥 Fonction pour uploader une image sur Cloudinary
+// 🔥 Fonction pour uploader une image sur Cloudinary (sans fichier local)
 async function uploadToCloudinary(file, folder = "tabac") {
   if (!file || !(file instanceof File)) throw new Error("Fichier invalide");
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const tempDir = path.join(process.cwd(), "temp");
-  await fs.mkdir(tempDir, { recursive: true });
+  // Convertir le fichier en buffer et en Base64 pour l'envoyer directement
+  const arrayBuffer = await file.arrayBuffer();
+  const base64String = Buffer.from(arrayBuffer).toString("base64");
 
-  const tempFilePath = path.join(tempDir, file.name);
-  await fs.writeFile(tempFilePath, buffer);
+  // Envoi direct vers Cloudinary
+  const result = await cloudinary.uploader.upload(
+    `data:image/jpeg;base64,${base64String}`,
+    {
+      folder,
+      use_filename: true,
+      unique_filename: false,
+      overwrite: true,
+    }
+  );
 
-  const result = await cloudinary.uploader.upload(tempFilePath, {
-    folder,
-    use_filename: true,
-    unique_filename: false,
-    overwrite: true,
-  });
-
-  await fs.unlink(tempFilePath);
-  return result.secure_url;
+  return result.secure_url; // Retourne l'URL Cloudinary
 }
 
 // ✅ **GET - Récupérer les actualités**
@@ -200,7 +200,9 @@ export async function DELETE(request) {
     const updatedData = data.filter((news) => news.id !== parseInt(id, 10));
     await fs.writeFile(filePath, JSON.stringify(updatedData, null, 2));
 
-    return new Response("Actualité supprimée et images nettoyées ✅", { status: 200 });
+    return new Response("Actualité supprimée et images nettoyées ✅", {
+      status: 200,
+    });
   } catch (error) {
     console.error("Erreur DELETE :", error);
     return new Response("Erreur interne du serveur", { status: 500 });
