@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
         return response;
     } catch (error) {
-        console.error("Erreur dans POST /api/login :", error);
+        console.error("Erreur dans POST /api/auth/login :", error);
         return NextResponse.json(
             { error: "Erreur interne du serveur" },
             { status: 500 }

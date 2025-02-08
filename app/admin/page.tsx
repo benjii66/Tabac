@@ -9,7 +9,7 @@ export default function AdminDashboard() {
     const handleLogout = async () => {
         try {
             // Envoie une requête POST à la route /api/logout
-            const response = await fetch("/api/logout", { method: "POST" });
+            const response = await fetch("/api/auth/logout", { method: "POST" });
 
             // Vérifie si la requête a réussi
             if (!response.ok) {
