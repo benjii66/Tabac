@@ -10,17 +10,15 @@ interface OpeningHour {
   hours: string;
 }
 
-// 🔗 URL du fichier JSON stocké sur Cloudinary
-const CLOUDINARY_JSON_URL = "https://res.cloudinary.com/dchckbio5/raw/upload/tabac/json/openingHours.json";
-
 export default function OpeningHours() {
   const [openingHours, setOpeningHours] = useState<OpeningHour[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Récupération des horaires via Cloudinary
+  // 🔥 Récupération des horaires via l'API Next.js
   useEffect(() => {
     const fetchOpeningHours = async () => {
       try {
-        const response = await axios.get(CLOUDINARY_JSON_URL);
+        const response = await axios.get("/api/openingHours");
         console.log("✅ Horaires récupérés :", response.data);
 
         if (Array.isArray(response.data)) {
@@ -31,13 +29,15 @@ export default function OpeningHours() {
         }
       } catch (error) {
         console.error("❌ Erreur lors de la récupération des horaires :", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchOpeningHours();
   }, []);
 
-  // Données structurées pour le SEO
+  // 🔹 Données structurées pour le SEO (schema.org)
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -61,7 +61,7 @@ export default function OpeningHours() {
   return (
     <section className="py-12 sm:py-16 bg-white" aria-labelledby="opening-hours-title" id="horaires">
       <div className="container mx-auto px-4">
-        {/* Titre de la section */}
+        {/* ✅ Titre de la section */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -75,10 +75,13 @@ export default function OpeningHours() {
             </h2>
           </div>
 
-          {/* Liste des horaires */}
+          {/* ✅ Liste des horaires */}
           <div className="bg-stone-50 rounded-lg p-4 sm:p-6 shadow-lg" aria-labelledby="opening-hours-list">
             <div id="opening-hours-list" className="sr-only">Horaires d’ouverture pour chaque jour de la semaine</div>
-            {openingHours.length > 0 ? (
+
+            {loading ? (
+              <p className="text-gray-500 text-center">Chargement...</p>
+            ) : openingHours.length > 0 ? (
               openingHours.map((item, index) => (
                 <motion.div
                   key={item.day}
@@ -97,6 +100,9 @@ export default function OpeningHours() {
           </div>
         </motion.div>
       </div>
+
+      {/* ✅ Données SEO pour Google */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
     </section>
   );
 }
