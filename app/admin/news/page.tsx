@@ -27,6 +27,8 @@ export default function ManageNews() {
     const [formMessage, setFormMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
     const [newsToDelete, setNewsToDelete] = useState<News | null>(null); // Actualité en attente de suppression
     const [removedImages, setRemovedImages] = useState<string[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [progress, setProgress] = useState(0);
 
 
 
@@ -67,7 +69,7 @@ export default function ManageNews() {
 
     useEffect(() => {
         if (formMessage) {
-            const timer = setTimeout(() => setFormMessage(null), 2000);
+            const timer = setTimeout(() => setFormMessage(null), 4000);
             return () => clearTimeout(timer);
         }
     }, [formMessage]);
@@ -85,18 +87,32 @@ export default function ManageNews() {
     // Affichage des erreurs
     { formError && <p className="text-red-500">{formError}</p> }
 
-    const resetState = () => {
-        setNewNews(null);
-        setEditingNews(null);
-        setFormMessage(null);
-        setRemovedImages([]);
-        setPreviewImage("");
-        setPreviewImagesMultiple([]);
-    };
-
 
     const handleAddNews = async () => {
-        if (!newNews || !validateNewsForm(newNews)) return;
+        if (!newNews) return;
+
+        setIsSubmitting(true);
+        setProgress(0);
+
+        const simulateProgress = () => {
+            let progressValue = 0;
+            let isCancelled = false;
+
+            const updateProgress = () => {
+                if (isCancelled) return;
+                progressValue += 3;
+                setProgress(progressValue);
+
+                if (progressValue < 100) {
+                    setTimeout(updateProgress, 100); // Plus fluide
+                }
+            };
+
+            updateProgress();
+            return () => { isCancelled = true; };
+        };
+
+        const cancelProgress = simulateProgress();
 
         try {
             const formData = new FormData();
@@ -119,15 +135,33 @@ export default function ManageNews() {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
-            setNews((prev) => [response.data, ...prev]); // ✅ Ajoute directement la news au state
-            setFormMessage({ type: "success", text: "Nouvelle ajoutée avec succès !" });
+            cancelProgress();
+            setProgress(100);
 
-            resetState(); // ✅ Reset immédiat sans délai
+            setTimeout(() => {
+                setNews((prev) => [response.data, ...prev]);
+                setIsSubmitting(false);
+                resetState();
+            }, 1500);
         } catch (error) {
-            console.error("Erreur lors de l'ajout :", error);
-            setFormMessage({ type: "error", text: "Erreur lors de l'ajout de l'actualité." });
+            cancelProgress();
+            setProgress(0);
+            setIsSubmitting(false);
         }
     };
+
+
+
+
+    const resetState = () => {
+        setNewNews(null);
+        setEditingNews(null);
+        setRemovedImages([]);
+        setPreviewImage("");
+        setPreviewImagesMultiple([]);
+        setProgress(0);
+    };
+
 
 
     //modifier une mauvaise image
@@ -179,16 +213,50 @@ export default function ManageNews() {
     const handleDelete = async () => {
         if (!newsToDelete) return;
 
+        setIsSubmitting(true);
+        setProgress(0);
+
+        const simulateProgress = () => {
+            let progressValue = 0;
+            let isCancelled = false;
+
+            const updateProgress = () => {
+                if (isCancelled) return;
+                progressValue += 3;
+                setProgress(progressValue);
+
+                if (progressValue < 100) {
+                    setTimeout(updateProgress, 100);
+                }
+            };
+
+            updateProgress();
+            return () => { isCancelled = true; };
+        };
+
+        const cancelProgress = simulateProgress();
+
         try {
             await axios.delete("/api/news", { data: { id: newsToDelete.id } });
-            setNews((prev) => prev.filter((item) => item.id !== newsToDelete.id));
-            setNewsToDelete(null);
-            setFormMessage({ type: "success", text: "Actualité supprimée avec succès !" });
+
+            cancelProgress();
+            setProgress(100);
+
+            setTimeout(() => {
+                setNews((prev) => prev.filter((item) => item.id !== newsToDelete.id));
+                setNewsToDelete(null);
+                setFormMessage({ type: "success", text: "Actualité supprimée avec succès !" });
+
+                setIsSubmitting(false);
+            }, 1500);
         } catch (error) {
-            console.error("Erreur lors de la suppression :", error);
+            cancelProgress();
+            setProgress(0);
+            setIsSubmitting(false);
             setFormMessage({ type: "error", text: "Erreur lors de la suppression." });
         }
     };
+
 
     const confirmDelete = (news: News) => {
         setNewsToDelete(news);
@@ -197,6 +265,29 @@ export default function ManageNews() {
 
     const handleSave = async () => {
         if (!editingNews) return;
+
+        setIsSubmitting(true);
+        setProgress(0);
+
+        const simulateProgress = () => {
+            let progressValue = 0;
+            let isCancelled = false;
+
+            const updateProgress = () => {
+                if (isCancelled) return;
+                progressValue += 3;
+                setProgress(progressValue);
+
+                if (progressValue < 100) {
+                    setTimeout(updateProgress, 100);
+                }
+            };
+
+            updateProgress();
+            return () => { isCancelled = true; };
+        };
+
+        const cancelProgress = simulateProgress();
 
         try {
             const formData = new FormData();
@@ -225,13 +316,22 @@ export default function ManageNews() {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
-            setNews((prev) =>
-                prev.map((news) => (news.id === editingNews.id ? response.data : news))
-            );
-            setFormMessage({ type: "success", text: "Modification effectuée avec succès !" });
-            setTimeout(resetState, 2000);
+            cancelProgress();
+            setProgress(100);
+
+            setTimeout(() => {
+                setNews((prev) =>
+                    prev.map((news) => (news.id === editingNews.id ? response.data : news))
+                );
+                setFormMessage({ type: "success", text: "Modification effectuée avec succès !" });
+
+                setIsSubmitting(false);
+                resetState();
+            }, 1500);
         } catch (error) {
-            console.error("Erreur lors de la sauvegarde :", error);
+            cancelProgress();
+            setProgress(0);
+            setIsSubmitting(false);
             setFormMessage({ type: "error", text: "Erreur lors de la modification." });
         }
     };
@@ -370,18 +470,22 @@ export default function ManageNews() {
 
                             {/* Affichage des erreurs */}
                             {formMessage && (
-                                <div
-                                    className={`mb-4 p-3 rounded ${formMessage.type === "error" ? "bg-red-100 text-red-500" : "bg-green-100 text-green-500"
-                                        }`}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.5 }}
+                                    className={`fixed bottom-4 right-4 z-50 p-3 rounded shadow-md text-white 
+        ${formMessage.type === "success" ? "bg-green-500" : "bg-red-500"}`}
                                 >
                                     {formMessage.text}
-                                </div>
+                                </motion.div>
                             )}
+
 
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Titre</label>
-                                <input
-                                    type="text"
+                                <textarea
                                     value={newNews?.title || ""} // Assure une valeur par défaut
                                     onChange={(e) =>
                                         setNewNews((prev) => prev ? { ...prev, title: e.target.value } : null)
@@ -494,10 +598,30 @@ export default function ManageNews() {
 
                                 <button
                                     onClick={handleAddNews}
-                                    className="bg-green-500 text-white px-4 py-2 rounded"
+                                    disabled={isSubmitting}
+                                    className="relative px-4 py-2 rounded w-32 overflow-hidden text-white transition-colors"
+                                    style={{
+                                        backgroundColor: `rgb(
+                                        ${160 - (progress / 100) * (160 - 34)},  /* De 160 (gris) à 34 (vert) */
+                                        ${160 + (progress / 100) * (180 - 160)}, /* De 160 (gris) à 180 (vert) */
+                                        ${160 - (progress / 100) * (160 - 34)})` /* De 160 (gris) à 34 (vert) */
+                                    }}
                                 >
-                                    Ajouter
+                                    {/* Texte dynamique */}
+                                    {isSubmitting ? (progress === 100 ? "Actualité ajoutée !" : "Ajout en cours...") : "Ajouter"}
+
+                                    {/* Barre de progression bien synchronisée */}
+                                    {isSubmitting && (
+                                        <motion.div
+                                            initial={{ width: "0%" }}
+                                            animate={{ width: `${progress}%` }}
+                                            transition={{ duration: 2, ease: "easeInOut" }}
+                                            style={{ width: `${progress}%` }}
+                                            className="absolute bottom-0 left-0 h-1 bg-green-700"
+                                        />
+                                    )}
                                 </button>
+
                             </div>
                         </div>
                     </motion.div>
@@ -529,8 +653,7 @@ export default function ManageNews() {
 
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Titre</label>
-                                <input
-                                    type="text"
+                                <textarea
                                     value={editingNews.title}
                                     onChange={(e) =>
                                         setEditingNews({ ...editingNews, title: e.target.value })
@@ -665,10 +788,27 @@ export default function ManageNews() {
 
                                 <button
                                     onClick={handleSave}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                                    disabled={isSubmitting}
+                                    className="relative px-4 py-2 rounded w-32 overflow-hidden text-white transition-colors"
+                                    style={{
+                                        backgroundColor: `rgb(
+            ${160 - (progress / 100) * (160 - 34)},  /* De 160 (gris) à 34 (bleu) */
+            ${160 + (progress / 100) * (150 - 160)}, /* De 160 (gris) à 150 (bleu) */
+            ${160 + (progress / 100) * (220 - 160)})` /* De 160 (gris) à 220 (bleu) */
+                                    }}
                                 >
-                                    Sauvegarder
+                                    {isSubmitting ? (progress === 100 ? "Modification réussie !" : "Sauvegarde en cours...") : "Sauvegarder"}
+
+                                    {isSubmitting && (
+                                        <motion.div
+                                            initial={{ width: "0%" }}
+                                            animate={{ width: `${progress}%` }}
+                                            transition={{ duration: 2, ease: "easeInOut" }}
+                                            className="absolute bottom-0 left-0 h-1 bg-blue-700"
+                                        />
+                                    )}
                                 </button>
+
                             </div>
                         </div>
                     </motion.div>
@@ -697,10 +837,27 @@ export default function ManageNews() {
                                 </button>
                                 <button
                                     onClick={handleDelete}
-                                    className="bg-red-500 text-white px-4 py-2 rounded"
+                                    disabled={isSubmitting}
+                                    className="relative px-4 py-2 rounded w-32 overflow-hidden text-white transition-colors"
+                                    style={{
+                                        backgroundColor: `rgb(
+            ${160 + (progress / 100) * (220 - 160)},  /* De 160 (gris) à 220 (rouge) */
+            ${160 - (progress / 100) * (160 - 34)},   /* De 160 (gris) à 34 (rouge) */
+            ${160 - (progress / 100) * (160 - 34)})`  /* De 160 (gris) à 34 (rouge) */
+                                    }}
                                 >
-                                    Supprimer
+                                    {isSubmitting ? (progress === 100 ? "Actualité supprimée !" : "Suppression en cours...") : "Supprimer"}
+
+                                    {isSubmitting && (
+                                        <motion.div
+                                            initial={{ width: "0%" }}
+                                            animate={{ width: `${progress}%` }}
+                                            transition={{ duration: 2, ease: "easeInOut" }}
+                                            className="absolute bottom-0 left-0 h-1 bg-red-700"
+                                        />
+                                    )}
                                 </button>
+
                             </div>
                         </div>
                     </motion.div>

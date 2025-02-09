@@ -1,32 +1,36 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import { FaClock } from "react-icons/fa";
+import axios from "axios";
 
 interface OpeningHour {
   day: string;
   hours: string;
 }
 
+// 🔗 URL du fichier JSON stocké sur Cloudinary
+const CLOUDINARY_JSON_URL = "https://res.cloudinary.com/dchckbio5/raw/upload/tabac/json/openingHours.json";
+
 export default function OpeningHours() {
   const [openingHours, setOpeningHours] = useState<OpeningHour[]>([]);
 
-  // Récupération des horaires via l'API
+  // Récupération des horaires via Cloudinary
   useEffect(() => {
     const fetchOpeningHours = async () => {
       try {
-        const response = await axios.get("/api/openingHours");
-        console.log("Horaires récupérés :", response.data); // Debug des données
+        const response = await axios.get(CLOUDINARY_JSON_URL);
+        console.log("✅ Horaires récupérés :", response.data);
+
         if (Array.isArray(response.data)) {
           setOpeningHours(response.data);
         } else {
-          console.error("Les données reçues ne sont pas un tableau :", response.data);
+          console.error("❌ Les données reçues ne sont pas un tableau :", response.data);
           setOpeningHours([]);
         }
       } catch (error) {
-        console.error("Erreur lors de la récupération des horaires :", error);
+        console.error("❌ Erreur lors de la récupération des horaires :", error);
       }
     };
 
@@ -55,11 +59,7 @@ export default function OpeningHours() {
   };
 
   return (
-    <section
-      className="py-12 sm:py-16 bg-white"
-      aria-labelledby="opening-hours-title"
-      id="horaires"
-    >
+    <section className="py-12 sm:py-16 bg-white" aria-labelledby="opening-hours-title" id="horaires">
       <div className="container mx-auto px-4">
         {/* Titre de la section */}
         <motion.div
@@ -70,22 +70,14 @@ export default function OpeningHours() {
         >
           <div className="flex items-center justify-center gap-2 mb-8">
             <FaClock className="text-red-600 text-2xl" aria-hidden="true" />
-            <h2
-              id="opening-hours-title"
-              className="text-2xl sm:text-3xl font-bold text-gray-800"
-            >
+            <h2 id="opening-hours-title" className="text-2xl sm:text-3xl font-bold text-gray-800">
               Horaires d’ouverture
             </h2>
           </div>
 
           {/* Liste des horaires */}
-          <div
-            className="bg-stone-50 rounded-lg p-4 sm:p-6 shadow-lg"
-            aria-labelledby="opening-hours-list"
-          >
-            <div id="opening-hours-list" className="sr-only">
-              Horaires d’ouverture pour chaque jour de la semaine
-            </div>
+          <div className="bg-stone-50 rounded-lg p-4 sm:p-6 shadow-lg" aria-labelledby="opening-hours-list">
+            <div id="opening-hours-list" className="sr-only">Horaires d’ouverture pour chaque jour de la semaine</div>
             {openingHours.length > 0 ? (
               openingHours.map((item, index) => (
                 <motion.div
@@ -95,12 +87,8 @@ export default function OpeningHours() {
                   transition={{ delay: index * 0.1 }}
                   className="flex justify-between text-sm sm:text-base py-2 border-b border-gray-200 last:border-0"
                 >
-                  <span className="font-medium text-gray-800">
-                    {item.day}
-                  </span>
-                  <span className="text-sm text-gray-600">
-                    {item.hours}
-                  </span>
+                  <span className="font-medium text-gray-800">{item.day}</span>
+                  <span className="text-sm text-gray-600">{item.hours}</span>
                 </motion.div>
               ))
             ) : (

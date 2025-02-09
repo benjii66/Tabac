@@ -1,35 +1,65 @@
-const fs = require("fs");
+const { v2: cloudinary } = require("cloudinary");
+const fs = require("fs/promises");
 const path = require("path");
-const cloudinary = require("cloudinary").v2;
-require("dotenv").config(); // Charge les variables d'environnement
+require("dotenv").config();
 
-// Configure Cloudinary avec les bonnes clés
+// 📌 Configuration de Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const folderPath = "public/assets/images"; // Dossier contenant les images
+// 📂 Dossier contenant les JSON
+const dataDir = path.join(process.cwd(), "data");
 
-// Vérifie que le dossier existe
-if (!fs.existsSync(folderPath)) {
-  console.error("Le dossier public/assets/images n'existe pas !");
-  process.exit(1);
+// 🛠 Fonction pour uploader un fichier JSON sur Cloudinary
+async function uploadJSONToCloudinary(fileName) {
+  try {
+    const filePath = path.join(dataDir, fileName);
+    const fileData = await fs.readFile(filePath, "utf-8");
+
+    // 🔹 Crée un fichier temporaire dans le dossier temp/
+    const tempDir = path.join(process.cwd(), "temp");
+    await fs.mkdir(tempDir, { recursive: true }); // Assure que le dossier existe
+
+    const tempFilePath = path.join(tempDir, fileName);
+    await fs.writeFile(tempFilePath, fileData, "utf-8");
+
+    // 🔥 Upload du fichier JSON depuis le chemin réel
+    const result = await cloudinary.uploader.upload(tempFilePath, {
+      resource_type: "raw", // Fichier brut
+      folder: "tabac/json",
+      use_filename: true,
+      unique_filename: false,
+      overwrite: true,
+    });
+
+    console.log(`✅ ${fileName} uploadé avec succès :`, result.secure_url);
+
+    // 🗑 Supprime le fichier temporaire après upload
+    await fs.unlink(tempFilePath);
+
+    return result.secure_url;
+  } catch (error) {
+    console.error(`❌ Erreur lors de l’upload de ${fileName} :`, error);
+    return null;
+  }
 }
 
-// Récupère tous les fichiers et les upload correctement dans "tabac/"
-fs.readdirSync(folderPath).forEach((file) => {
-  const filePath = path.join(folderPath, file);
-  const publicId = `tabac/${path.parse(file).name}`; // 🔥 Corrige le chemin
+// 🚀 Uploader tous les fichiers JSON
+async function uploadAllJSONFiles() {
+  const files = ["news.json", "openingHours.json", "services.json"];
+  const urls = {};
 
-  cloudinary.uploader
-    .upload(filePath, {
-      public_id: publicId, // 🔥 On garde uniquement ça
-      use_filename: true,
-      unique_filename: false, // Évite d'ajouter un suffixe aléatoire
-      overwrite: true, // Permet de réécrire les fichiers si besoin
-    })
-    .then((result) => console.log(`✅ Upload réussi : ${result.secure_url}`))
-    .catch((error) => console.error(`❌ Erreur d'upload : ${error.message}`));
-});
+  for (const file of files) {
+    const url = await uploadJSONToCloudinary(file);
+    if (url) {
+      urls[file] = url;
+    }
+  }
+
+  console.log("🌐 URLs des fichiers JSON :", urls);
+}
+
+uploadAllJSONFiles();
