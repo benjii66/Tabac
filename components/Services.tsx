@@ -8,7 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 
 import axios from "axios";
-import cld from "../config/cloudinaryConfig"; // 🔥 Import de Cloudinary
+import cld from "../config/cloudinaryConfig"; // 🔥 Import Cloudinary
 import { fill } from "@cloudinary/url-gen/actions/resize";
 
 import "swiper/css";
@@ -21,34 +21,61 @@ interface Service {
   description: string;
   details: string;
   image: string;
-  images?: string[]; // Images multiples optionnelles
+  images?: string[];
 }
+
+// 🔗 URL du fichier JSON stocké sur Cloudinary
+const CLOUDINARY_JSON_URL = "https://res.cloudinary.com/dchckbio5/raw/upload/tabac/json/services.json";
+
+// ✅ Vérifie si une URL est déjà hébergée sur Cloudinary
+const isCloudinaryUrl = (url: string) => url.includes("res.cloudinary.com");
+
+// 🔥 Fonction pour récupérer l'URL Cloudinary formatée
+const getCloudinaryImageUrl = (imageName?: string) => {
+  if (!imageName) return ""; // Gestion des valeurs nulles
+  if (isCloudinaryUrl(imageName)) return imageName; // Si c'est déjà une URL Cloudinary, on ne touche pas
+
+  const extractedName = imageName.split("/").pop(); // Récupère juste le nom du fichier
+  const formattedImageName = `tabac/${extractedName}`; // Ajoute le préfixe correct
+
+  console.log("✅ URL Cloudinary générée :", formattedImageName);
+
+  return cld.image(formattedImageName).resize(fill().width(400).height(300)).toURL();
+};
 
 export default function Services() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [services, setServices] = useState<Service[]>([]);
 
-  // Récupération des services
+  // 📥 Récupération des services depuis Cloudinary
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("/api/services");
-        console.log("Services après transformation :", response.data);
+        const response = await axios.get(CLOUDINARY_JSON_URL);
+        console.log("✅ Services récupérés :", response.data);
+
         if (Array.isArray(response.data)) {
-          setServices(response.data);
+          const formattedServices = response.data.map((service: Service) => ({
+            ...service,
+            image: getCloudinaryImageUrl(service.image),
+            images: service.images?.map((img) => getCloudinaryImageUrl(img)),
+          }));
+
+          console.log("✅ Services après transformation :", formattedServices);
+          setServices(formattedServices);
         } else {
-          console.error("Les données de l'API services ne sont pas un tableau :", response.data);
+          console.error("❌ Les données reçues ne sont pas un tableau :", response.data);
         }
       } catch (error) {
-        console.error("Erreur lors de la récupération des services :", error);
+        console.error("❌ Erreur lors de la récupération des services :", error);
       }
     };
 
     fetchServices();
   }, []);
 
-  // Détecter la taille de l'écran
+  // 📏 Détecter la taille de l'écran
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -59,7 +86,7 @@ export default function Services() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Données JSON-LD pour les services
+  // 🎯 Données JSON-LD pour les services (SEO)
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -85,44 +112,30 @@ export default function Services() {
   };
 
   return (
-    <section
-      className="py-16 bg-stone-100"
-      aria-labelledby="services-title"
-      id="services"
-    >
+    <section className="py-16 bg-stone-100" aria-labelledby="services-title" id="services">
       {/* Métadonnées JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
       <div className="container mx-auto px-4">
-        <h2
-          id="services-title"
-          className="text-3xl font-bold text-gray-800 mb-4 text-center"
-        >
+        <h2 id="services-title" className="text-3xl font-bold text-gray-800 mb-4 text-center">
           Nos Services : Tabac, Presse, et plus encore
         </h2>
         <p className="text-gray-600 text-center mb-12">
-          Découvrez tout ce que nous proposons pour répondre à vos besoins
-          quotidiens.
+          Découvrez tout ce que nous proposons pour répondre à vos besoins quotidiens.
         </p>
 
         {/* Affichage des services pour mobile ou desktop */}
         {isMobile ? (
-           <ServicesMobile services={services} onSelectService={setSelectedService} />
-        ) : (
           <ServicesMobile services={services} onSelectService={setSelectedService} />
+        ) : (
+          <ServicesDesktop services={services} onSelectService={setSelectedService} />
         )}
       </div>
 
       {/* Modal avec carrousel des images multiples */}
       <AnimatePresence>
         {selectedService && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-            onClick={() => setSelectedService(null)}
-          >
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={() => setSelectedService(null)}>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -131,85 +144,27 @@ export default function Services() {
               className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative"
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                onClick={() => setSelectedService(null)}
-                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
-              >
+              <button onClick={() => setSelectedService(null)} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
                 ✕
               </button>
 
               {/* Carrousel des images multiples */}
-              <Swiper
-                modules={[Navigation, Pagination]}
-                navigation={{
-                  prevEl: ".custom-swiper-button-prev",
-                  nextEl: ".custom-swiper-button-next",
-                }}
-                pagination={{ clickable: true }}
-                spaceBetween={10}
-                slidesPerView={1}
-                className="mb-4"
-              >
+              <Swiper modules={[Navigation, Pagination]} navigation pagination={{ clickable: true }} spaceBetween={10} slidesPerView={1} className="mb-4">
                 {selectedService.images && selectedService.images.length > 0 ? (
                   selectedService.images.map((img, index) => (
                     <SwiperSlide key={index}>
-                      <img
-                        src={img}
-                        alt={`Image ${index + 1} du service ${selectedService.title}`}
-                        className="w-full h-40 object-cover rounded-lg"
-                      />
+                      <img src={img} alt={`Image ${index + 1} du service ${selectedService.title}`} className="w-full h-40 object-cover rounded-lg" />
                     </SwiperSlide>
                   ))
                 ) : (
                   <SwiperSlide>
-                    <img
-                      src={selectedService.image}
-                      alt={`Image principale du service ${selectedService.title}`}
-                      className="w-full h-40 object-cover rounded-lg"
-                    />
+                    <img src={selectedService.image} alt={`Image principale du service ${selectedService.title}`} className="w-full h-40 object-cover rounded-lg" />
                   </SwiperSlide>
                 )}
               </Swiper>
 
-              {/* Flèches de navigation personnalisées */}
-              <div
-                className="custom-swiper-button-prev absolute top-1/2 left-[-20px] transform -translate-y-1/2 text-gray-800 hover:text-gray-500 z-10 cursor-pointer"
-                role="button"
-                aria-label="Précédent"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-8 h-8 sm:w-10 sm:h-10"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-              </div>
-              <div
-                className="custom-swiper-button-next absolute top-1/2 right-[-20px] transform -translate-y-1/2 text-gray-800 hover:text-gray-500 z-10 cursor-pointer"
-                role="button"
-                aria-label="Suivant"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-8 h-8 sm:w-10 sm:h-10"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-
-              {/* Contenu textuel du service */}
               <h3 className="text-xl font-bold mb-2">{selectedService.title}</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                {selectedService.description}
-              </p>
+              <p className="text-sm text-gray-600 mb-4">{selectedService.description}</p>
               <p className="text-sm text-gray-700">{selectedService.details}</p>
             </motion.div>
           </div>
