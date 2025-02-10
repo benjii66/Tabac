@@ -71,4 +71,16 @@
       "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg"
     ]
   }
+  {
+    "id": 8,
+    "title": "Bite de poisson",
+    "description": "À boire et ça repart",
+    "image": "https://res.cloudinary.com/dchckbio5/image/upload/tabac/Frigo.jpg",
+    "details": "Un large choix de boissons fraîches et chaudes : sodas, cafés, thés, et bien d’autres pour toutes vos envies.",
+    "images": [
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg",
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg",
+      "https://res.cloudinary.com/dchckbio5/image/upload/tabac/gourdes-noel.jpg"
+    ]
+  }
 ]

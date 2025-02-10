@@ -6,7 +6,6 @@ import ServicesDesktop from "./ServicesDesktop";
 import { AnimatePresence, motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
-
 import axios from "axios";
 import cld from "../config/cloudinaryConfig"; // 🔥 Import Cloudinary
 import { fill } from "@cloudinary/url-gen/actions/resize";
@@ -25,7 +24,8 @@ interface Service {
 }
 
 // 🔗 URL du fichier JSON stocké sur Cloudinary
-const CLOUDINARY_JSON_URL = "https://res.cloudinary.com/dchckbio5/raw/upload/tabac/json/services.json";
+const CLOUDINARY_JSON_URL = `https://res.cloudinary.com/dchckbio5/raw/upload/tabac/json/services.json?invalidate=true&timestamp=${Date.now()}`;
+
 
 // ✅ Vérifie si une URL est déjà hébergée sur Cloudinary
 const isCloudinaryUrl = (url: string) => url.includes("res.cloudinary.com");
@@ -47,33 +47,42 @@ export default function Services() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true); // Ajout du chargement
 
   // 📥 Récupération des services depuis Cloudinary
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const response = await axios.get(CLOUDINARY_JSON_URL);
-        console.log("✅ Services récupérés :", response.data);
+        console.log("✅ Nombre de services récupérés :", response.data.length);
+        console.log("✅ Services bruts récupérés :", response.data);
 
         if (Array.isArray(response.data)) {
           const formattedServices = response.data.map((service: Service) => ({
             ...service,
-            image: getCloudinaryImageUrl(service.image),
-            images: service.images?.map((img) => getCloudinaryImageUrl(img)),
+            id: Number(service.id), // ✅ On garde bien un ID numérique
+            image: service.image || "/assets/images/placeholder.svg",
+            images: service.images ? service.images.map(img => img || "/assets/images/placeholder.svg") : [],
           }));
 
           console.log("✅ Services après transformation :", formattedServices);
           setServices(formattedServices);
+          console.log("✅ Nombre de services après transformation :", formattedServices.length);
+          console.log("✅ Services après transformation :", formattedServices);
         } else {
           console.error("❌ Les données reçues ne sont pas un tableau :", response.data);
         }
       } catch (error) {
         console.error("❌ Erreur lors de la récupération des services :", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchServices();
   }, []);
+
+
 
   // 📏 Détecter la taille de l'écran
   useEffect(() => {
@@ -124,11 +133,18 @@ export default function Services() {
           Découvrez tout ce que nous proposons pour répondre à vos besoins quotidiens.
         </p>
 
-        {/* Affichage des services pour mobile ou desktop */}
-        {isMobile ? (
-          <ServicesMobile services={services} onSelectService={setSelectedService} />
+        {/* 🔄 Ajout d'un message de chargement */}
+        {loading ? (
+          <div className="text-center text-gray-500 text-lg">Chargement des services...</div>
         ) : (
-          <ServicesDesktop services={services} onSelectService={setSelectedService} />
+          <>
+            {/* Affichage des services pour mobile ou desktop */}
+            {isMobile ? (
+              <ServicesMobile services={services} onSelectService={setSelectedService} />
+            ) : (
+              <ServicesDesktop services={services} onSelectService={setSelectedService} />
+            )}
+          </>
         )}
       </div>
 
@@ -151,9 +167,9 @@ export default function Services() {
               {/* Carrousel des images multiples */}
               <Swiper modules={[Navigation, Pagination]} navigation pagination={{ clickable: true }} spaceBetween={10} slidesPerView={1} className="mb-4">
                 {selectedService.images && selectedService.images.length > 0 ? (
-                  selectedService.images.map((img, index) => (
+                  (selectedService.images?.length > 0 ? selectedService.images : [selectedService.image]).map((img, index) => (
                     <SwiperSlide key={index}>
-                      <img src={img} alt={`Image ${index + 1} du service ${selectedService.title}`} className="w-full h-40 object-cover rounded-lg" />
+                      <img src={img} alt={`Image ${index + 1}`} className="w-full h-40 object-cover rounded-lg" />
                     </SwiperSlide>
                   ))
                 ) : (
