@@ -1,39 +1,79 @@
-import fs from "fs/promises";
-import path from "path";
+import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
 
-// Chemins vers le fichier JSON et le dossier des images
-const filePath = path.join(process.cwd(), "data", "services.json");
-const uploadDir = path.join(process.cwd(), "public", "assets", "images");
+dotenv.config();
 
-// Fonction pour sauvegarder une image
-async function saveImage(file) {
-  if (!(file instanceof File)) {
-    throw new Error("Le fichier n'est pas valide.");
+// 📌 Configuration de Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// 📍 URL Cloudinary du fichier JSON
+const JSON_PUBLIC_ID = "tabac/json/services.json"; // Remplace par le bon dossier Cloudinary
+
+// 🔥 Fonction pour récupérer le JSON depuis Cloudinary
+async function fetchJSONFromCloudinary() {
+  try {
+    const result = await cloudinary.api.resource(JSON_PUBLIC_ID, {
+      resource_type: "raw",
+    });
+    const response = await fetch(result.secure_url);
+    const data = await response.json();
+    return Array.isArray(data) ? data : []; // ✅ Empêche une erreur si le JSON est corrompu
+  } catch (error) {
+    console.error("❌ Erreur lors de la récupération du JSON :", error);
+    return [];
   }
-
-  const fileName = file.name;
-  const fileBuffer = Buffer.from(await file.arrayBuffer());
-  const imagePath = path.join(uploadDir, fileName);
-
-  // Créer le répertoire si nécessaire et sauvegarder l'image
-  await fs.mkdir(uploadDir, { recursive: true });
-  await fs.writeFile(imagePath, fileBuffer);
-
-  return `/assets/images/${fileName}`;
 }
 
-// Route GET : Récupérer tous les services
+// 🔥 Fonction pour mettre à jour le JSON existant sur Cloudinary
+async function updateJSONOnCloudinary(data) {
+  try {
+    const base64String = Buffer.from(JSON.stringify(data, null, 2)).toString(
+      "base64"
+    );
+
+    const result = await cloudinary.uploader.upload(
+      `data:application/json;base64,${base64String}`,
+      {
+        resource_type: "raw",
+        folder: "tabac/json",
+        public_id: "services.json", // 📌 FIX: Bien forcer le même nom !
+        overwrite: true, // 📌 FIX: On remplace bien l'ancien JSON
+        invalidate: true, // 📌 FIX: On force Cloudinary à invalider le cache
+      }
+    );
+
+    return result.secure_url;
+  } catch (error) {
+    console.error("❌ Erreur lors de l’update du JSON :", error);
+    return null;
+  }
+}
+
+// ✅ **GET - Récupérer les actualités**
 export async function GET() {
   try {
-    const data = await fs.readFile(filePath, "utf-8");
-    return new Response(data, { status: 200 });
+    const data = await fetchJSONFromCloudinary();
+    return new Response(JSON.stringify(data), { status: 200 });
   } catch (error) {
-    console.error("Erreur lors de la récupération des services :", error);
+    console.error("Erreur GET :", error);
     return new Response("Erreur interne du serveur", { status: 500 });
   }
 }
 
-// Route POST : Ajouter un service
+// 🔥 Fonction pour uploader plusieurs images en parallèle sur Cloudinary
+async function uploadImages(files) {
+  return await Promise.all(
+    files.map(async (file) => {
+      return await uploadToCloudinary(file);
+    })
+  );
+}
+
+// ✅ **POST - Ajouter une actualité**
 export async function POST(request) {
   try {
     const formData = await request.formData();
@@ -46,44 +86,52 @@ export async function POST(request) {
       return new Response("Données obligatoires manquantes", { status: 400 });
     }
 
-    // Sauvegarde de l'image principale
-    const mainImagePath =
-      mainImage instanceof File
-        ? await saveImage(mainImage)
-        : "/assets/images/placeholder.svg";
+    // 📌 Récupérer le JSON existant AVANT d’ajouter le service
+    const data = await fetchJSONFromCloudinary();
 
-    // Sauvegarde des images multiples
-    const imagesPaths = await Promise.all(
+    // ✅ Trouver le dernier ID et générer un ID logique
+    const lastId =
+      data.length > 0 ? Math.max(...data.map((service) => service.id)) : 0;
+    const newId = lastId + 1;
+
+    // 📌 Uploader l’image principale si nécessaire
+    let mainImageUrl = "/assets/images/placeholder.svg";
+    if (mainImage instanceof File) {
+      console.log("📤 Upload de l'image principale :", mainImage.name);
+      mainImageUrl = await uploadToCloudinary(mainImage);
+    }
+
+    // 📌 Uploader les images secondaires
+    const imagesUrls = await uploadImages(
       Array.from(formData.keys())
-        .filter((key) => key.startsWith("images["))
-        .map(async (key) => {
-          const file = formData.get(key);
-          return file instanceof File ? await saveImage(file) : null;
-        })
-    ).then((paths) => paths.filter(Boolean)); // Filtre les valeurs nulles
+        .filter((k) => k.startsWith("images["))
+        .map((k) => formData.get(k))
+        .filter((file) => file instanceof File)
+    );
 
-    // Charger les services existants et ajouter le nouveau service
-    const data = JSON.parse(await fs.readFile(filePath, "utf-8"));
+    // 📌 Ajouter le service au tableau avec l'ID court
     const newService = {
-      id: Date.now(),
+      id: newId, // ✅ Utilisation d'un ID incrémental
       title,
       description,
       details,
-      image: mainImagePath,
-      images: imagesPaths,
+      image: mainImageUrl,
+      images: imagesUrls,
     };
 
-    data.push(newService);
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+    data.push(newService); // Ajout du service dans le JSON
+
+    // 📌 Mettre à jour le fichier JSON sur Cloudinary
+    await updateJSONOnCloudinary(data);
 
     return new Response(JSON.stringify(newService), { status: 201 });
   } catch (error) {
-    console.error("Erreur lors de l'ajout du service :", error);
+    console.error("❌ Erreur POST :", error);
     return new Response("Erreur interne du serveur", { status: 500 });
   }
 }
 
-// Route PUT : Modifier un service
+// ✅ **PUT - Modifier une actualité**
 export async function PUT(request) {
   try {
     const formData = await request.formData();
@@ -91,77 +139,156 @@ export async function PUT(request) {
     const title = formData.get("title");
     const description = formData.get("description");
     const details = formData.get("details");
+    const mainImage = formData.get("image");
     const removedImages = JSON.parse(formData.get("removedImages") || "[]");
 
-    if (!id || !title || !description || !details) {
-      return new Response("Données obligatoires manquantes", { status: 400 });
+    if (
+      !title ||
+      !description ||
+      !details ||
+      (mainImage && !(mainImage instanceof File))
+    ) {
+      return new Response("Données obligatoires manquantes ou image invalide", {
+        status: 400,
+      });
     }
 
-    // Charger les services existants et trouver le service à modifier
-    const data = JSON.parse(await fs.readFile(filePath, "utf-8"));
-    const serviceIndex = data.findIndex(
-      (service) => service.id === parseInt(id, 10)
+    // 📌 Récupérer le JSON existant
+    let data = await fetchJSONFromCloudinary();
+    let ServiceToEdit = data.find(
+      (services) => services.id === parseInt(id, 10)
     );
 
-    if (serviceIndex === -1) {
+    if (!ServiceToEdit) {
       return new Response("Service introuvable", { status: 404 });
     }
 
-    const service = data[serviceIndex];
+    // 📌 Gérer l’image principale (si modifiée)
+    let mainImageUrl = ServiceToEdit.image; // Garde l’ancienne image si pas modifiée
+    if (mainImage instanceof File) {
+      console.log("Nouvelle image principale reçue :", mainImage.name);
+      mainImageUrl = await uploadToCloudinary(mainImage);
 
-    // Mettre à jour les images multiples
-    const updatedImages = service.images.filter(
-      (img) => !removedImages.includes(img)
-    );
-    const newImages = await Promise.all(
+      // Supprimer l'ancienne image sur Cloudinary
+      const oldImagePublicId = extractPublicId(ServiceToEdit.image);
+      if (oldImagePublicId) {
+        await cloudinary.api.delete_resources([oldImagePublicId]);
+      }
+    }
+
+    // 📌 Gérer les images multiples (ajoutées/supprimées)
+    let updatedImages = ServiceToEdit.images || [];
+
+    // Supprimer les images retirées par l'utilisateur
+    updatedImages = updatedImages.filter((img) => !removedImages.includes(img));
+
+    // Ajouter les nouvelles images uploadées
+    const newImages = await uploadImages(
       Array.from(formData.keys())
-        .filter((key) => key.startsWith("images["))
-        .map(async (key) => {
-          const file = formData.get(key);
-          return file instanceof File ? await saveImage(file) : null;
-        })
-    ).then((paths) => paths.filter(Boolean));
+        .filter((k) => k.startsWith("images["))
+        .map((k) => formData.get(k))
+        .filter((file) => file instanceof File)
+    );
+    updatedImages = [...updatedImages, ...newImages];
 
-    // Mettre à jour l'image principale (si modifiée)
-    const mainImageFile = formData.get("image");
-    const mainImagePath =
-      mainImageFile instanceof File
-        ? await saveImage(mainImageFile)
-        : service.image;
-
-    // Mise à jour des données
-    data[serviceIndex] = {
-      ...service,
+    // 📌 Mettre à jour la news modifiée
+    const updatedService = {
+      ...ServiceToEdit,
       title,
       description,
       details,
-      image: mainImagePath,
-      images: [...updatedImages, ...newImages],
+      image: mainImageUrl,
+      images: updatedImages,
     };
 
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
-    return new Response(JSON.stringify(data[serviceIndex]), { status: 200 });
+    // 📌 Remplacer l'ancienne news par la nouvelle dans le JSON
+    data = data.map((services) =>
+      services.id === parseInt(id, 10) ? updatedService : services
+    );
+
+    // 📌 Mettre à jour le JSON dans Cloudinary
+    await updateJSONOnCloudinary(data);
+
+    return new Response(JSON.stringify(updatedService), { status: 200 });
   } catch (error) {
-    console.error("Erreur lors de la modification du service :", error);
+    console.error("Erreur PUT :", error);
     return new Response("Erreur interne du serveur", { status: 500 });
   }
 }
 
-// Route DELETE : Supprimer un service
+// 📌 Fonction pour extraire l’ID public d’une image Cloudinary
+function extractPublicId(url) {
+  if (!url.includes("res.cloudinary.com")) return null;
+  const parts = url.split("/");
+  return parts.slice(-2).join("/").split(".")[0];
+}
+
+// ✅ **DELETE - Supprimer une actualité**
 export async function DELETE(request) {
   try {
     const { id } = await request.json();
-
-    // Charger les services existants et filtrer le service à supprimer
-    const data = JSON.parse(await fs.readFile(filePath, "utf-8"));
-    const updatedData = data.filter(
-      (service) => service.id !== parseInt(id, 10)
+    let data = await fetchJSONFromCloudinary();
+    const serviceToDelete = data.find(
+      (services) => services.id === parseInt(id, 10)
     );
 
-    await fs.writeFile(filePath, JSON.stringify(updatedData, null, 2));
-    return new Response("Service supprimé", { status: 200 });
+    if (!serviceToDelete) {
+      return new Response("Actualité introuvable", { status: 404 });
+    }
+
+    // 📌 Supprimer les images Cloudinary liées
+    const extractPublicId = (url) => {
+      if (!url.includes("res.cloudinary.com")) return null;
+      const parts = url.split("/");
+      return parts.slice(-2).join("/").split(".")[0];
+    };
+
+    const imagesToDelete = [serviceToDelete.image, ...serviceToDelete.images]
+      .map(extractPublicId)
+      .filter(Boolean);
+
+    if (imagesToDelete.length > 0) {
+      await cloudinary.api.delete_resources(imagesToDelete);
+    }
+
+    // 📌 Supprimer l’article du JSON
+    data = data.filter((services) => services.id !== parseInt(id, 10));
+
+    // 📌 Mettre à jour le JSON sur Cloudinary après suppression
+    await updateJSONOnCloudinary(data);
+
+    return new Response("Actualité supprimée ✅", { status: 200 });
   } catch (error) {
-    console.error("Erreur lors de la suppression du service :", error);
+    console.error("Erreur DELETE :", error);
     return new Response("Erreur interne du serveur", { status: 500 });
+  }
+}
+
+// 🔥 Fonction pour uploader une image sur Cloudinary
+async function uploadToCloudinary(file, folder = "tabac") {
+  try {
+    if (!file || !(file instanceof File))
+      throw new Error("❌ Fichier invalide");
+
+    const arrayBuffer = await file.arrayBuffer();
+    const base64String = Buffer.from(arrayBuffer).toString("base64");
+
+    console.log(`📤 Uploading ${file.name} to Cloudinary...`);
+
+    const result = await cloudinary.uploader.upload(
+      `data:image/jpeg;base64,${base64String}`,
+      {
+        folder,
+        use_filename: true,
+        unique_filename: false,
+        overwrite: true,
+      }
+    );
+
+    console.log("✅ Upload réussi :", result.secure_url);
+    return result.secure_url;
+  } catch (error) {
+    console.error("❌ Erreur lors de l’upload :", error);
+    return null;
   }
 }

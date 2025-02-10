@@ -18,29 +18,54 @@ export default function ManageServices() {
     const [loading, setLoading] = useState(true);
     const [editingService, setEditingService] = useState<Service | null>(null);
     const [newService, setNewService] = useState<Service | null>(null);
-    const [previewImage, setPreviewImage] = useState<string>("");
-    const [previewImagesMultiple, setPreviewImagesMultiple] = useState<string[]>([]);
+    const [previewImage, setPreviewImage] = useState<string>(""); // Prévisualisation de l'image principale
+    const [previewImagesMultiple, setPreviewImagesMultiple] = useState<string[]>([]); // Prévisualisation des images multiples
+    const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
+    const [formError, setFormError] = useState<string | null>(null);
     const [formMessage, setFormMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
     const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
     const [removedImages, setRemovedImages] = useState<string[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [progress, setProgress] = useState(0);
 
+    // Générer l'URL temporaire pour l'image d'édition
+    useEffect(() => {
+        if (editingService?.image instanceof File) {
+            const url = URL.createObjectURL(editingService.image);
+            setTempImageUrl(url);
+        } else {
+            setTempImageUrl(null);
+        }
+    }, [editingService]);
+
+    // Nettoyer les URLs temporaires pour éviter les fuites mémoire
+    useEffect(() => {
+        return () => {
+            if (previewImage) URL.revokeObjectURL(previewImage);
+            if (tempImageUrl) URL.revokeObjectURL(tempImageUrl);
+        };
+    }, [previewImage, tempImageUrl]);
+
+    // Récupérer les actualités et gérer les URLs des images
     useEffect(() => {
         const fetchServices = async () => {
             try {
                 const response = await axios.get("/api/services");
                 setServices(response.data);
-            } catch {
-                setFormMessage({ type: "error", text: "Erreur de chargement des services." });
+            } catch (error) {
+                console.error("Erreur lors de la récupération des services :", error);
             } finally {
                 setLoading(false);
             }
         };
+
         fetchServices();
     }, []);
 
+
     useEffect(() => {
         if (formMessage) {
-            const timer = setTimeout(() => setFormMessage(null), 2000);
+            const timer = setTimeout(() => setFormMessage(null), 4000);
             return () => clearTimeout(timer);
         }
     }, [formMessage]);
@@ -56,41 +81,129 @@ export default function ManageServices() {
     const resetState = () => {
         setNewService(null);
         setEditingService(null);
+        setServiceToDelete(null);
         setFormMessage(null);
         setRemovedImages([]);
         setPreviewImage("");
         setPreviewImagesMultiple([]);
+        setProgress(0);
     };
 
+    // Affichage des erreurs
+    { formError && <p className="text-red-500">{formError}</p> }
+
     const handleAddService = async () => {
-        if (!newService || !validateServiceForm(newService)) return;
+        if (!newService) return;
+
+        setIsSubmitting(true);
+        setProgress(0);
+
+        const formData = new FormData();
+        formData.append("title", newService.title);
+        formData.append("description", newService.description);
+        formData.append("details", newService.details);
+
+        if (newService.image instanceof File) {
+            formData.append("image", newService.image);
+        }
+
+        newService.images.forEach((img, index) => {
+            if (img instanceof File) {
+                formData.append(`images[${index}]`, img);
+            }
+        });
+
+        console.log("📤 FormData envoyé :", Object.fromEntries(formData.entries()));
 
         try {
-            const formData = new FormData();
-            formData.append("title", newService.title);
-            formData.append("description", newService.description);
-            formData.append("details", newService.details);
-
-            if (newService.image instanceof File) formData.append("image", newService.image);
-
-            newService.images.forEach((img, index) => {
-                if (img instanceof File) formData.append(`images[${index}]`, img);
-            });
-
             const response = await axios.post("/api/services", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
-            setServices((prev) => [...prev, response.data]);
-            setFormMessage({ type: "success", text: "Service ajouté avec succès !" });
-            resetState();
-        } catch {
-            setFormMessage({ type: "error", text: "Erreur lors de l'ajout du service." });
+            setProgress(100);
+            setTimeout(() => {
+                setServices((prev) => [response.data, ...prev]);
+                setIsSubmitting(false);
+                resetState();
+            }, 1500);
+        } catch (error) {
+            console.error("❌ Erreur lors de l'ajout :", error);
+            setProgress(0);
+            setIsSubmitting(false);
         }
     };
 
-    const handleEditService = async () => {
-        if (!editingService || !validateServiceForm(editingService)) return;
+
+    //modifier une mauvaise image
+    const handleRemoveMultipleImage = (index: number) => {
+        if (newService) {
+            setNewService((prev) => {
+                if (!prev) return null;
+                const updatedImages = prev.images.filter((_, i) => i !== index);
+                const updatedPreviews = previewImagesMultiple.filter((_, i) => i !== index);
+                setPreviewImagesMultiple(updatedPreviews);
+                return { ...prev, images: updatedImages };
+            });
+        } else if (editingService) {
+            setEditingService((prev) => {
+                if (!prev) return null;
+                const updatedImages = prev.images.filter((_, i) => i !== index);
+                const removedImage = prev.images[index];
+                if (typeof removedImage === "string" && !removedImages.includes(removedImage)) {
+                    setRemovedImages((prev) => [...prev, removedImage]);
+                }
+                const updatedPreviews = previewImagesMultiple.filter((_, i) => i !== index);
+                setPreviewImagesMultiple(updatedPreviews);
+                return { ...prev, images: updatedImages };
+            });
+        }
+    };
+
+    const handleAddMultipleImages = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const files = Array.from(event.target.files);
+            const previews = files.map((file) => URL.createObjectURL(file));
+            setPreviewImagesMultiple((prev) => [...prev, ...previews]);
+
+            if (editingService) {
+                setEditingService((prev) => {
+                    if (!prev) return null;
+                    return { ...prev, images: [...prev.images, ...files] };
+                });
+            } else if (newService) {
+                setNewService((prev) => {
+                    if (!prev) return null;
+                    return { ...prev, images: [...prev.images, ...files] };
+                });
+            }
+        }
+    };
+
+    const handleSave = async () => {
+        if (!editingService) return;
+
+        setIsSubmitting(true);
+        setProgress(0);
+
+        const simulateProgress = () => {
+            let progressValue = 0;
+            let isCancelled = false;
+
+            const updateProgress = () => {
+                if (isCancelled) return;
+                progressValue += 3;
+                setProgress(progressValue);
+
+                if (progressValue < 100) {
+                    setTimeout(updateProgress, 100);
+                }
+            };
+
+            updateProgress();
+            return () => { isCancelled = true; };
+        };
+
+        const cancelProgress = simulateProgress();
 
         try {
             const formData = new FormData();
@@ -99,10 +212,17 @@ export default function ManageServices() {
             formData.append("description", editingService.description);
             formData.append("details", editingService.details);
 
-            if (editingService.image instanceof File) formData.append("image", editingService.image);
+            const imageFile = (document.querySelector("#editImageUpload") as HTMLInputElement).files?.[0];
+            if (imageFile) {
+                formData.append("image", imageFile);
+            }
 
-            editingService.images.forEach((img, index) => {
-                if (img instanceof File) formData.append(`images[${index}]`, img);
+            editingService.images.forEach((image, index) => {
+                if (image instanceof File) {
+                    formData.append(`images[${index}]`, image);
+                } else if (!removedImages.includes(image as string)) {
+                    formData.append(`existingImages[${index}]`, image);
+                }
             });
 
             formData.append("removedImages", JSON.stringify(removedImages));
@@ -111,44 +231,82 @@ export default function ManageServices() {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
-            setServices((prev) =>
-                prev.map((service) => (service.id === editingService.id ? response.data : service))
-            );
-            setFormMessage({ type: "success", text: "Service modifié avec succès !" });
-            resetState();
-        } catch {
-            setFormMessage({ type: "error", text: "Erreur lors de la modification du service." });
+            cancelProgress();
+            setProgress(100);
+
+            setTimeout(() => {
+                setServices((prev) =>
+                    prev.map((services) => (services.id === editingService.id ? response.data : services))
+                );
+                setFormMessage({ type: "success", text: "Modification effectuée avec succès !" });
+
+                setIsSubmitting(false);
+                resetState();
+            }, 1500);
+        } catch (error) {
+            cancelProgress();
+            setProgress(0);
+            setIsSubmitting(false);
+            setFormMessage({ type: "error", text: "Erreur lors de la modification." });
         }
     };
 
-    const handleDeleteService = async () => {
+
+    // Supprimer une actualité
+    const handleDelete = async () => {
         if (!serviceToDelete) return;
+
+        setIsSubmitting(true);
+        setProgress(0);
+
+        const simulateProgress = () => {
+            let progressValue = 0;
+            let isCancelled = false;
+
+            const updateProgress = () => {
+                if (isCancelled) return;
+                progressValue += 3;
+                setProgress(progressValue);
+
+                if (progressValue < 100) {
+                    setTimeout(updateProgress, 100);
+                }
+            };
+
+            updateProgress();
+            return () => { isCancelled = true; };
+        };
+
+        const cancelProgress = simulateProgress();
 
         try {
             await axios.delete("/api/services", { data: { id: serviceToDelete.id } });
-            setServices((prev) => prev.filter((service) => service.id !== serviceToDelete.id));
-            setFormMessage({ type: "success", text: "Service supprimé avec succès !" });
-            setServiceToDelete(null);
-        } catch {
-            setFormMessage({ type: "error", text: "Erreur lors de la suppression du service." });
+
+            cancelProgress();
+            setProgress(100);
+
+            setTimeout(() => {
+                setServices((prev) => prev.filter((item) => item.id !== serviceToDelete.id));
+                setServiceToDelete(null);
+                setFormMessage({ type: "success", text: "Service supprimé avec succès !" });
+
+                setIsSubmitting(false);
+            }, 1500);
+        } catch (error) {
+            cancelProgress();
+            setProgress(0);
+            setIsSubmitting(false);
+            setFormMessage({ type: "error", text: "Erreur lors de la suppression." });
         }
     };
 
-    const handleRemoveMultipleImage = (index: number) => {
-        setEditingService((prev) => {
-            if (!prev) return null;
-            const updatedImages = [...prev.images];
-            const removedImage = updatedImages.splice(index, 1)[0];
 
-            if (typeof removedImage === "string") {
-                setRemovedImages((prev) => [...prev, removedImage]);
-            }
-
-            return { ...prev, images: updatedImages };
-        });
+    const confirmDelete = (services: Service) => {
+        setServiceToDelete(services);
     };
 
     return (
+
         <main className="min-h-screen bg-gray-100">
             <header className="bg-blue-600 text-white py-4 shadow-md flex justify-between items-center px-4">
                 <div>
@@ -172,7 +330,6 @@ export default function ManageServices() {
                 </div>
             </header>
 
-            {/* Liste des services */}
             <div className="container mx-auto py-8 px-4">
                 <section className="bg-white p-6 rounded-lg shadow-md">
                     <div className="flex justify-between items-center mb-4">
@@ -183,15 +340,16 @@ export default function ManageServices() {
                                     id: Date.now(),
                                     title: "",
                                     description: "",
-                                    details: "",
                                     image: "",
                                     images: [],
+                                    details: "",
                                 })
                             }
                             className="bg-green-500 text-white px-4 py-2 rounded"
                         >
                             Ajouter un Service
                         </button>
+
                     </div>
 
                     {loading ? (
@@ -200,8 +358,8 @@ export default function ManageServices() {
                         <table className="table-auto w-full border-collapse border border-gray-200">
                             <thead>
                                 <tr>
-                                    <th className="border border-gray-300 px-4 py-2">Image Principale</th>
                                     <th className="border border-gray-300 px-4 py-2">Images</th>
+                                    <th className="border border-gray-300 px-4 py-2">Images Description</th>
                                     <th className="border border-gray-300 px-4 py-2">Titre</th>
                                     <th className="border border-gray-300 px-4 py-2">Description</th>
                                     <th className="border border-gray-300 px-4 py-2">Détails</th>
@@ -209,63 +367,64 @@ export default function ManageServices() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {services.map((service) => (
-                                    <tr key={service.id}>
+                                {services.map((item) => (
+                                    <tr key={item.id}>
                                         <td className="border border-gray-300 px-4 py-2">
+                                            {/* Image principale */}
                                             <img
-                                                src={
-                                                    typeof service.image === "string"
-                                                        ? service.image
-                                                        : URL.createObjectURL(service.image)
-                                                }
-                                                alt={service.title}
-                                                className="w-32 h-32 object-cover rounded"
+                                                src={typeof item.image === "string" ? item.image : URL.createObjectURL(item.image)}
+                                                alt={item.title}
+                                                className="w-32 h-32 object-cover rounded mb-2"
                                             />
+
                                         </td>
                                         <td className="border border-gray-300 px-4 py-2">
+                                            {/* Images multiples */}
                                             <div className="grid grid-cols-3 gap-1">
-                                                {service.images.map((img, index) => (
-                                                    <img
-                                                        key={index}
-                                                        src={
-                                                            typeof img === "string"
-                                                                ? img
-                                                                : URL.createObjectURL(img)
-                                                        }
-                                                        alt={`Image ${index + 1}`}
-                                                        className="w-12 h-12 object-cover rounded"
-                                                    />
-                                                ))}
+                                                {item.images &&
+                                                    item.images.map((img, index) => (
+                                                        <img
+                                                            key={index}
+                                                            src={img instanceof File ? URL.createObjectURL(img) : img}
+                                                            alt={`Image ${index + 1}`}
+                                                            className="w-12 h-12 object-cover rounded"
+                                                        />
+                                                    ))}
                                             </div>
+
                                         </td>
-                                        <td className="border border-gray-300 px-4 py-2">{service.title}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{service.description}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{service.details}</td>
+                                        <td className="border border-gray-300 px-4 py-2">{item.title}</td>
+                                        <td className="border border-gray-300 px-4 py-2">{item.description}</td>
+                                        <td className="border border-gray-300 px-4 py-2">{item.details}</td>
                                         <td className="border border-gray-300 px-4 py-2">
                                             <button
-                                                onClick={() => setEditingService(service)}
-                                                className="bg-yellow-500 px-4 py-2 rounded text-white"
+                                                onClick={() => setEditingService(item)}
+                                                className="bg-yellow-500 px-4 py-2 rounded text-white mb-1"
                                             >
                                                 Modifier
                                             </button>
                                             <button
-                                                onClick={() => setServiceToDelete(service)}
+                                                onClick={() => confirmDelete(item)}
                                                 className="bg-red-500 px-4 py-2 rounded text-white"
                                             >
                                                 Supprimer
                                             </button>
+
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+
                     )}
                 </section>
             </div>
 
+            {/* Modale d'ajout */}
             <AnimatePresence>
                 {newService && (
                     <motion.div
+                        key={newService.id}
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
@@ -274,27 +433,32 @@ export default function ManageServices() {
                         <div className="bg-white rounded-lg p-6 relative">
                             <h3 className="text-xl font-bold mb-4">Ajouter un Service</h3>
 
-                            {/* Affichage des messages d'erreur/succès */}
+                            {/* Affichage des erreurs */}
                             {formMessage && (
-                                <div
-                                    className={`fixed bottom-4 right-4 z-50 p-4 rounded shadow-md ${formMessage.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.5 }}
+                                    className={`fixed bottom-4 right-4 z-50 p-3 rounded shadow-md text-white 
+        ${formMessage.type === "success" ? "bg-green-500" : "bg-red-500"}`}
                                 >
                                     {formMessage.text}
-                                </div>
+                                </motion.div>
                             )}
 
-                            {/* Formulaire d'ajout */}
+
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Titre</label>
-                                <input
-                                    type="text"
-                                    value={newService.title}
+                                <textarea
+                                    value={newService?.title || ""} // Assure une valeur par défaut
                                     onChange={(e) =>
-                                        setNewService({ ...newService, title: e.target.value })
+                                        setNewService((prev) => prev ? { ...prev, title: e.target.value } : null)
                                     }
                                     className="w-full px-3 py-2 border rounded"
                                 />
                             </div>
+
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Description</label>
                                 <textarea
@@ -305,6 +469,7 @@ export default function ManageServices() {
                                     className="w-full px-3 py-2 border rounded"
                                 />
                             </div>
+
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Détails</label>
                                 <textarea
@@ -316,63 +481,56 @@ export default function ManageServices() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-bold mb-2">Image Principale</label>
+                                <label className="block text-sm font-bold mb-2">Image</label>
+
                                 <input
                                     type="file"
+                                    id="newImageUpload"
                                     onChange={(e) => {
                                         if (e.target.files && e.target.files[0]) {
                                             const file = e.target.files[0];
                                             setPreviewImage(URL.createObjectURL(file));
-                                            setNewService({ ...newService, image: file });
+                                            setNewService((prev) => (prev ? { ...prev, image: file } : null)); // Met à jour newNews
                                         }
                                     }}
-                                    className="w-full px-3 py-2 border rounded"
+                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                 />
+
                                 <img
-                                    src={previewImage || "/assets/images/placeholder.svg"}
+                                    src={
+                                        previewImage ||
+                                        (editingService?.image instanceof File
+                                            ? URL.createObjectURL(editingService.image)
+                                            : editingService?.image) ||
+                                        "/assets/images/placeholder.svg"
+                                    }
                                     alt="Preview"
-                                    className="w-full h-40 object-cover mt-4 rounded"
+                                    className="w-full h-40 object-cover rounded mt-4"
                                 />
                             </div>
 
-                            {/* Ajout des images multiples */}
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Images Multiples</label>
+
                                 <input
                                     type="file"
+                                    id="newImagesUpload"
                                     multiple
-                                    onChange={(e) => {
-                                        if (e.target.files) {
-                                            const files = Array.from(e.target.files);
-                                            const previews = files.map((file) => URL.createObjectURL(file));
-                                            setPreviewImagesMultiple((prev) => [...prev, ...previews]);
-                                            setNewService((prev) =>
-                                                prev ? { ...prev, images: [...prev.images, ...files] } : null
-                                            );
-                                        }
-                                    }}
-                                    className="w-full px-3 py-2 border rounded"
+                                    onChange={handleAddMultipleImages}
+                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                 />
-                                <div className="grid grid-cols-3 gap-2 mt-4">
+
+                                <div className="grid grid-cols-3 gap-4 mt-4">
                                     {previewImagesMultiple.map((image, index) => (
-                                        <div key={index} className="relative">
+                                        <div key={index} className="relative w-20 h-20">
                                             <img
                                                 src={image}
                                                 alt={`Image multiple ${index + 1}`}
-                                                className="w-20 h-20 object-cover rounded"
+                                                className="w-full h-full object-cover rounded"
                                             />
                                             <button
-                                                onClick={() => {
-                                                    setPreviewImagesMultiple((prev) => prev.filter((_, i) => i !== index));
-                                                    setNewService((prev) =>
-                                                        prev
-                                                            ? {
-                                                                ...prev,
-                                                                images: prev.images.filter((_, i) => i !== index),
-                                                            }
-                                                            : null
-                                                    );
-                                                }}
+                                                type="button"
+                                                onClick={() => handleRemoveMultipleImage(index)}
                                                 className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
                                             >
                                                 &times;
@@ -389,18 +547,40 @@ export default function ManageServices() {
                                 >
                                     Annuler
                                 </button>
+
                                 <button
                                     onClick={handleAddService}
-                                    className="bg-green-500 text-white px-4 py-2 rounded"
+                                    disabled={isSubmitting}
+                                    className="relative px-4 py-2 rounded w-32 overflow-hidden text-white transition-colors"
+                                    style={{
+                                        backgroundColor: `rgb(
+                                        ${160 - (progress / 100) * (160 - 34)},  /* De 160 (gris) à 34 (vert) */
+                                        ${160 + (progress / 100) * (180 - 160)}, /* De 160 (gris) à 180 (vert) */
+                                        ${160 - (progress / 100) * (160 - 34)})` /* De 160 (gris) à 34 (vert) */
+                                    }}
                                 >
-                                    Ajouter
+                                    {/* Texte dynamique */}
+                                    {isSubmitting ? (progress === 100 ? "Service ajouté !" : "Ajout en cours...") : "Ajouter"}
+
+                                    {/* Barre de progression bien synchronisée */}
+                                    {isSubmitting && (
+                                        <motion.div
+                                            initial={{ width: "0%" }}
+                                            animate={{ width: `${progress}%` }}
+                                            transition={{ duration: 2, ease: "easeInOut" }}
+                                            style={{ width: `${progress}%` }}
+                                            className="absolute bottom-0 left-0 h-1 bg-green-700"
+                                        />
+                                    )}
                                 </button>
+
                             </div>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
+            {/* Modale de modification */}
             <AnimatePresence>
                 {editingService && (
                     <motion.div
@@ -409,21 +589,23 @@ export default function ManageServices() {
                         exit={{ opacity: 0, scale: 0.9 }}
                         className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
                     >
-                        <div className="bg-white p-6 rounded-lg relative">
+                        <div className="bg-white rounded-lg p-6 relative">
                             <h3 className="text-xl font-bold mb-4">Modifier un Service</h3>
 
+                            {/* Affichage des erreurs */}
                             {formMessage && (
                                 <div
-                                    className={`fixed bottom-4 right-4 z-50 p-4 rounded shadow-md ${formMessage.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}
+                                    className={`fixed bottom-4 right-4 z-50 p-4 rounded shadow-md ${formMessage.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+                                        }`}
                                 >
                                     {formMessage.text}
                                 </div>
                             )}
 
+
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Titre</label>
-                                <input
-                                    type="text"
+                                <textarea
                                     value={editingService.title}
                                     onChange={(e) =>
                                         setEditingService({ ...editingService, title: e.target.value })
@@ -431,7 +613,6 @@ export default function ManageServices() {
                                     className="w-full px-3 py-2 border rounded"
                                 />
                             </div>
-
 
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Description</label>
@@ -454,11 +635,11 @@ export default function ManageServices() {
                                     className="w-full px-3 py-2 border rounded"
                                 />
                             </div>
-
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Image Principale</label>
                                 <input
                                     type="file"
+                                    id="editImageUpload"
                                     onChange={(e) => {
                                         if (e.target.files && e.target.files[0]) {
                                             const file = e.target.files[0];
@@ -466,42 +647,55 @@ export default function ManageServices() {
                                             setEditingService({ ...editingService, image: file });
                                         }
                                     }}
-                                    className="w-full px-3 py-2 border rounded"
+                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                 />
                                 <img
                                     src={
                                         previewImage ||
-                                        (editingService.image instanceof File
+                                        (editingService?.image instanceof File
                                             ? URL.createObjectURL(editingService.image)
-                                            : editingService.image) ||
+                                            : editingService?.image) ||
                                         "/assets/images/placeholder.svg"
                                     }
                                     alt="Preview"
-                                    className="w-full h-40 object-cover mt-4 rounded"
+                                    className="w-full h-40 object-cover rounded mt-4"
                                 />
                             </div>
 
-                            {/* Modification des images multiples */}
                             <div className="mb-4">
                                 <label className="block text-sm font-bold mb-2">Images Multiples</label>
                                 <input
                                     type="file"
+                                    id="editMultipleImagesUpload"
                                     multiple
                                     onChange={(e) => {
                                         if (e.target.files) {
                                             const files = Array.from(e.target.files);
-                                            const previews = files.map((file) => URL.createObjectURL(file));
-                                            setPreviewImagesMultiple((prev) => [...prev, ...previews]);
-                                            setEditingService((prev) =>
-                                                prev ? { ...prev, images: [...prev.images, ...files] } : null
+                                            const previews = files.map((file) =>
+                                                URL.createObjectURL(file)
                                             );
+
+                                            setPreviewImagesMultiple((prev) => [...prev, ...previews]);
+                                            setEditingService((prev) => {
+                                                if (!prev || !prev.id) {
+                                                    console.error("Service non valide ou id manquant.");
+                                                    return null;
+                                                }
+
+                                                return {
+                                                    ...prev,
+                                                    images: [...(prev.images || []), ...files],
+                                                };
+                                            });
+
                                         }
                                     }}
-                                    className="w-full px-3 py-2 border rounded"
+                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                 />
-                                <div className="grid grid-cols-3 gap-2 mt-4">
+
+                                <div className="grid grid-cols-3 gap-4 mt-4">
                                     {editingService?.images.map((image, index) => (
-                                        <div key={index} className="relative">
+                                        <div key={index} className="relative w-20 h-20">
                                             <img
                                                 src={
                                                     image instanceof File
@@ -509,10 +703,11 @@ export default function ManageServices() {
                                                         : image
                                                 }
                                                 alt={`Image multiple ${index + 1}`}
-                                                className="w-20 h-20 object-cover rounded"
+                                                className="w-full h-full object-cover rounded"
                                             />
                                             <button
-                                                onClick={() => handleRemoveMultipleImage(index)}
+                                                type="button"
+                                                onClick={() => handleRemoveMultipleImage(index)} // Appel ici
                                                 className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
                                             >
                                                 &times;
@@ -529,17 +724,36 @@ export default function ManageServices() {
                                 >
                                     Annuler
                                 </button>
+
                                 <button
-                                    onClick={handleEditService}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                                    onClick={handleSave}
+                                    disabled={isSubmitting}
+                                    className="relative px-4 py-2 rounded w-32 overflow-hidden text-white transition-colors"
+                                    style={{
+                                        backgroundColor: `rgb(
+            ${160 - (progress / 100) * (160 - 34)},  /* De 160 (gris) à 34 (bleu) */
+            ${160 + (progress / 100) * (150 - 160)}, /* De 160 (gris) à 150 (bleu) */
+            ${160 + (progress / 100) * (220 - 160)})` /* De 160 (gris) à 220 (bleu) */
+                                    }}
                                 >
-                                    Sauvegarder
+                                    {isSubmitting ? (progress === 100 ? "Modification réussie !" : "Sauvegarde en cours...") : "Sauvegarder"}
+
+                                    {isSubmitting && (
+                                        <motion.div
+                                            initial={{ width: "0%" }}
+                                            animate={{ width: `${progress}%` }}
+                                            transition={{ duration: 2, ease: "easeInOut" }}
+                                            className="absolute bottom-0 left-0 h-1 bg-blue-700"
+                                        />
+                                    )}
                                 </button>
+
                             </div>
                         </div>
                     </motion.div>
                 )}
-            </AnimatePresence>
+            </AnimatePresence>;
+            {/* confirmer la suppression  */}
             <AnimatePresence>
                 {serviceToDelete && (
                     <motion.div
@@ -551,9 +765,9 @@ export default function ManageServices() {
                         <div className="bg-white rounded-lg p-6">
                             <h3 className="text-lg font-bold mb-4">Confirmer la suppression</h3>
                             <p className="mb-4">
-                                Êtes-vous sûr de vouloir supprimer le service : <strong>{serviceToDelete.title}</strong> ?
+                                Êtes-vous sûr de vouloir supprimer le service : <strong>{serviceToDelete?.title}</strong> ?
                             </p>
-                            <div className="flex justify-center gap-2">
+                            <div className="flex justify-end gap-2">
                                 <button
                                     onClick={() => setServiceToDelete(null)}
                                     className="bg-gray-500 text-white px-4 py-2 rounded"
@@ -561,17 +775,33 @@ export default function ManageServices() {
                                     Annuler
                                 </button>
                                 <button
-                                    onClick={handleDeleteService}
-                                    className="bg-red-500 text-white px-4 py-2 rounded"
+                                    onClick={handleDelete}
+                                    disabled={isSubmitting}
+                                    className="relative px-4 py-2 rounded w-32 overflow-hidden text-white transition-colors"
+                                    style={{
+                                        backgroundColor: `rgb(
+            ${160 + (progress / 100) * (220 - 160)},  /* De 160 (gris) à 220 (rouge) */
+            ${160 - (progress / 100) * (160 - 34)},   /* De 160 (gris) à 34 (rouge) */
+            ${160 - (progress / 100) * (160 - 34)})`  /* De 160 (gris) à 34 (rouge) */
+                                    }}
                                 >
-                                    Supprimer
+                                    {isSubmitting ? (progress === 100 ? "Service supprimé !" : "Suppression en cours...") : "Supprimer"}
+
+                                    {isSubmitting && (
+                                        <motion.div
+                                            initial={{ width: "0%" }}
+                                            animate={{ width: `${progress}%` }}
+                                            transition={{ duration: 2, ease: "easeInOut" }}
+                                            className="absolute bottom-0 left-0 h-1 bg-red-700"
+                                        />
+                                    )}
                                 </button>
+
                             </div>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-
         </main>
     );
 }
