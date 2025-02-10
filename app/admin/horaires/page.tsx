@@ -95,9 +95,28 @@ export default function ManageOpeningHours() {
 
     return (
         <main className="min-h-screen bg-gray-100">
-            <header className="bg-blue-600 text-white py-4 shadow-md flex justify-between items-center px-4">
-                <h1 className="text-2xl font-bold">Gestion des Horaires</h1>
+             <header className="bg-blue-600 text-white py-4 shadow-md flex justify-between items-center px-4">
+                <div>
+                    <h1 className="text-2xl font-bold">Gestion des Horaires</h1>
+                </div>
+                <div className="flex gap-4">
+                    {/* Bouton pour revenir au dashboard */}
+                    <button
+                        onClick={() => window.location.href = "/admin"} // Remplacez "/admin" par l'URL de votre dashboard
+                        className="bg-gray-200 text-blue-600 px-4 py-2 rounded hover:bg-gray-300"
+                    >
+                        Dashboard
+                    </button>
+                    {/* Bouton pour revenir au site frontend */}
+                    <button
+                        onClick={() => window.location.href = "/"} // Remplacez "/" par l'URL de votre frontend
+                        className="bg-gray-200 text-blue-600 px-4 py-2 rounded hover:bg-gray-300"
+                    >
+                        Accueil
+                    </button>
+                </div>
             </header>
+
 
             <div className="container mx-auto py-8 px-4">
                 <section className="bg-white p-6 rounded-lg shadow-md">
