@@ -26,8 +26,6 @@ export function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
-    //TRIPLE MOOOONSTRE
-
     // Permettre l'accès à /admin si le token est valide
     if (pathname.startsWith("/admin")) {
         const token = req.cookies.get("auth_token")?.value;
@@ -50,13 +48,15 @@ export function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
-    // Rediriger toutes les autres routes vers /maintenance
+    /*
+    // 🔴 Maintenance activée : redirige toutes les routes vers /maintenance
     if (pathname !== "/maintenance") {
         console.log("Redirection vers /maintenance");
         const url = req.nextUrl.clone();
         url.pathname = "/maintenance";
         return NextResponse.redirect(url);
     }
+    */
 
     // Par défaut, continuer normalement
     return NextResponse.next();
