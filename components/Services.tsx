@@ -127,7 +127,7 @@ export default function Services() {
 
       <div className="container mx-auto px-4">
         <h2 id="services-title" className="text-3xl font-bold text-gray-800 mb-4 text-center">
-          Nos Services : Tabac, Presse, et plus encore
+          Nos Services : Tabac, Presse, Vape Shop et plus encore
         </h2>
         <p className="text-gray-600 text-center mb-12">
           Découvrez tout ce que nous proposons pour répondre à vos besoins quotidiens.

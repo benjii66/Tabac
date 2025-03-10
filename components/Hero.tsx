@@ -36,7 +36,7 @@ export default function Hero() {
     >
       {/* Image d’arrière-plan */}
       <Image
-        src="/assets/images/facade_magasin.jpg"
+        src="/assets/images/facade_magasin_copie.jpg"
         alt="Vue extérieure du Tabac Presse Le Soler avec sa façade accueillante."
         fill
         className="object-cover brightness-75"

@@ -123,7 +123,7 @@ return (
               }}
               pagination={{ clickable: true }}
               breakpoints={{
-                320: { slidesPerView: 1, spaceBetween: 10 },
+                520: { slidesPerView: 1, spaceBetween: 10 },
                 640: { slidesPerView: 2, spaceBetween: 15 },
                 1024: { slidesPerView: 3, spaceBetween: 20 },
               }}
@@ -131,14 +131,14 @@ return (
               {news.map((item) => (
                 <SwiperSlide key={item.id}>
                   <div
-                    className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer"
+                    className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer h-auto"
                     onClick={() => setSelectedNews(item)}
                     aria-label={`Afficher les détails de l'article : ${item.title}`}
                   >
                     <img
                       src={item.image}
                       alt={`Image de l'article : ${item.title}`}
-                      className="w-full h-40 object-cover"
+                      className="w-full h-90 object-cover"
                     />
                     <div className="p-4">
                       <h3
