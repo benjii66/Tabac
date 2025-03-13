@@ -42,7 +42,7 @@ export default function NewsSection() {
 
     console.log("✅ URL Cloudinary générée :", formattedImageName);
 
-    return cld.image(formattedImageName).resize(fill().width(400).height(300)).toURL();
+    return cld.image(formattedImageName).resize(fill().width(500).height(400)).toURL();
   };
 
   const fetchNews = async () => {
@@ -183,10 +183,11 @@ export default function NewsSection() {
               </button>
             </div>
           ) : (
+            // c'est là hein !
             <div className={`${news.length < 3 ? "flex justify-center gap-6" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"}`}>
               {news.map((item) => (
                 <div key={item.id} className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer w-96" onClick={() => setSelectedNews(item)}>
-                  <img src={item.image} alt={`Image de l'article : ${item.title}`} className="w-96 h-40 object-cover" />
+                  <img src={item.image} alt={`Image de l'article : ${item.title}`} className="w-full h-96 object-cover" />
                   <div className="p-4">
                     <h3 className="text-lg font-bold text-gray-800">{item.title}</h3>
                     <p className="text-sm text-gray-600">{item.description}</p>
