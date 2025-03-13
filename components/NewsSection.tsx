@@ -187,7 +187,7 @@ export default function NewsSection() {
             <div className={`${news.length < 3 ? "flex justify-center gap-6" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"}`}>
               {news.map((item) => (
                 <div key={item.id} className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer w-96" onClick={() => setSelectedNews(item)}>
-                  <img src={item.image} alt={`Image de l'article : ${item.title}`} className="w-full h-96 object-cover" />
+                  <img src={item.image} alt={`Image de l'article : ${item.title}`} className="w-full h-80 sm:h-50 md:h-96 object-cover" />
                   <div className="p-4">
                     <h3 className="text-lg font-bold text-gray-800">{item.title}</h3>
                     <p className="text-sm text-gray-600">{item.description}</p>
