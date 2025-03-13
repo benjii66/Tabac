@@ -169,7 +169,7 @@ export default function Services() {
                 {selectedService.images && selectedService.images.length > 0 ? (
                   (selectedService.images?.length > 0 ? selectedService.images : [selectedService.image]).map((img, index) => (
                     <SwiperSlide key={index}>
-                      <img src={img} alt={`Image ${index + 1}`} className="w-full h-40 object-cover rounded-lg" />
+                      <img src={img} alt={`Image ${index + 1}`} className="w-full h-80 object-cover rounded-lg" />
                     </SwiperSlide>
                   ))
                 ) : (
