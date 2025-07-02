@@ -253,16 +253,21 @@ async function uploadToCloudinary(file, folder = "tabac") {
 
   const arrayBuffer = await file.arrayBuffer();
   const base64String = Buffer.from(arrayBuffer).toString("base64");
+  const mimeType = file.type;
 
-  const result = await cloudinary.uploader.upload(
-    `data:image/jpeg;base64,${base64String}`,
-    {
-      folder,
-      use_filename: true,
-      unique_filename: false,
-      overwrite: true,
-    }
-  );
-
-  return result.secure_url;
+  try {
+    const result = await cloudinary.uploader.upload(
+      `data:${mimeType};base64,${base64String}`,
+      {
+        folder,
+        use_filename: true,
+        unique_filename: false,
+        overwrite: true,
+      }
+    );
+    return result.secure_url;
+  } catch (error) {
+    console.error("❌ Erreur Cloudinary :", error);
+    throw new Error("Upload échoué : " + error.message);
+  }
 }
