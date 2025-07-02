@@ -715,8 +715,8 @@ export default function ManageNews() {
                       : editingNews?.image) ||
                     "/assets/images/placeholder.svg"
                   }
-                  width={128} // équivalent à w-32 (32 * 4)
-                  height={128} // idem pour h-32
+                  width={128}
+                  height={128}
                   alt="Preview"
                   className="w-full h-40 object-cover rounded mt-4"
                 />
