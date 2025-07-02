@@ -82,21 +82,16 @@ export async function POST(request) {
     const data = await fetchJSONFromCloudinary();
 
     // 📌 Uploader l’image principale si nécessaire
-    let mainImageUrl = "/assets/images/placeholder.svg";
-    if (mainImage instanceof File) {
-      console.log("Fichier reçu :", mainImage.name);
-      mainImageUrl = await uploadToCloudinary(mainImage);
-    }
+    const mainImageUrl = mainImage; // C’est déjà une URL Cloudinary depuis le front
 
     // 📌 Uploader les images secondaires
     const imagesUrls = [];
+
     for (const key of Array.from(formData.keys()).filter((k) =>
       k.startsWith("images[")
     )) {
-      const file = formData.get(key);
-      if (file instanceof File) {
-        imagesUrls.push(await uploadToCloudinary(file));
-      }
+      const imgUrl = formData.get(key); // ✅ Déjà une URL Cloudinary
+      if (imgUrl) imagesUrls.push(imgUrl);
     }
 
     // 📌 Ajouter la nouvelle actualité au tableau
@@ -126,56 +121,54 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     const formData = await request.formData();
-    const id = formData.get("id");
-    const title = formData.get("title");
-    const description = formData.get("description");
-    const details = formData.get("details");
-    const date = formData.get("date");
-    const mainImage = formData.get("image");
+
+    const rawId = formData.get("id");
+    const id = rawId ? parseInt(rawId.toString(), 10) : null;
+    const title = formData.get("title")?.toString() || "";
+    const description = formData.get("description")?.toString() || "";
+    const details = formData.get("details")?.toString() || "";
+    const date = formData.get("date")?.toString() || "";
     const removedImages = JSON.parse(formData.get("removedImages") || "[]");
 
     if (!id || !title || !description || !details || !date) {
       return new Response("Données obligatoires manquantes", { status: 400 });
     }
 
-    // 📌 Récupérer le JSON existant
+    // 🔁 Récupération des données
     let data = await fetchJSONFromCloudinary();
-    let newsToEdit = data.find((news) => news.id === parseInt(id, 10));
+    let newsToEdit = data.find((news) => news.id === id);
 
     if (!newsToEdit) {
       return new Response("Actualité introuvable", { status: 404 });
     }
 
-    // 📌 Gérer l’image principale (si modifiée)
-    let mainImageUrl = newsToEdit.image; // Garde l’ancienne image si pas modifiée
-    if (mainImage instanceof File) {
-      console.log("Nouvelle image principale reçue :", mainImage.name);
-      mainImageUrl = await uploadToCloudinary(mainImage);
+    // 📸 Gérer l’image principale
+    const mainImage = formData.get("image");
+    let mainImageUrl = newsToEdit.image;
 
-      // Supprimer l'ancienne image sur Cloudinary
+    if (mainImage instanceof File) {
+      mainImageUrl = await uploadToCloudinary(mainImage, "tabac");
       const oldImagePublicId = extractPublicId(newsToEdit.image);
       if (oldImagePublicId) {
         await cloudinary.api.delete_resources([oldImagePublicId]);
       }
+    } else if (typeof mainImage === "string" && mainImage.startsWith("http")) {
+      mainImageUrl = mainImage;
     }
 
-    // 📌 Gérer les images multiples (ajoutées/supprimées)
+    // 📸 Gérer les images secondaires
     let updatedImages = newsToEdit.images || [];
-
-    // Supprimer les images retirées par l'utilisateur
     updatedImages = updatedImages.filter((img) => !removedImages.includes(img));
 
-    // Ajouter les nouvelles images uploadées
-    for (const key of Array.from(formData.keys()).filter((k) =>
-      k.startsWith("images[")
-    )) {
-      const file = formData.get(key);
-      if (file instanceof File) {
-        updatedImages.push(await uploadToCloudinary(file));
+    for (const key of formData.keys()) {
+      if (key.startsWith("images[")) {
+        const img = formData.get(key);
+        if (typeof img === "string" && !updatedImages.includes(img)) {
+          updatedImages.push(img);
+        }
       }
     }
 
-    // 📌 Mettre à jour la news modifiée
     const updatedNews = {
       ...newsToEdit,
       title,
@@ -186,12 +179,7 @@ export async function PUT(request) {
       images: updatedImages,
     };
 
-    // 📌 Remplacer l'ancienne news par la nouvelle dans le JSON
-    data = data.map((news) =>
-      news.id === parseInt(id, 10) ? updatedNews : news
-    );
-
-    // 📌 Mettre à jour le JSON dans Cloudinary
+    data = data.map((news) => (news.id === id ? updatedNews : news));
     await updateJSONOnCloudinary(data);
 
     return new Response(JSON.stringify(updatedNews), { status: 200 });
