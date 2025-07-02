@@ -94,20 +94,8 @@ export async function POST(request) {
       data.length > 0 ? Math.max(...data.map((service) => service.id)) : 0;
     const newId = lastId + 1;
 
-    // 📌 Uploader l’image principale si nécessaire
-    let mainImageUrl = "/assets/images/placeholder.svg";
-    if (mainImage instanceof File) {
-      console.log("📤 Upload de l'image principale :", mainImage.name);
-      mainImageUrl = await uploadToCloudinary(mainImage);
-    }
-
-    // 📌 Uploader les images secondaires
-    const imagesUrls = await uploadImages(
-      Array.from(formData.keys())
-        .filter((k) => k.startsWith("images["))
-        .map((k) => formData.get(k))
-        .filter((file) => file instanceof File)
-    );
+    const mainImageUrl = mainImage; // 👈 C’est déjà une URL string
+    const imagesUrls = Array.from(formData.getAll("images[]")).filter(Boolean);
 
     // 📌 Ajouter le service au tableau avec l'ID court
     const newService = {
@@ -146,7 +134,9 @@ export async function PUT(request) {
       !title ||
       !description ||
       !details ||
-      (mainImage && !(mainImage instanceof File))
+      (mainImage &&
+        typeof mainImage !== "string" &&
+        !(mainImage instanceof File))
     ) {
       return new Response("Données obligatoires manquantes ou image invalide", {
         status: 400,
@@ -164,32 +154,25 @@ export async function PUT(request) {
     }
 
     // 📌 Gérer l’image principale (si modifiée)
-    let mainImageUrl = ServiceToEdit.image; // Garde l’ancienne image si pas modifiée
+    let mainImageUrl = ServiceToEdit.image;
+
     if (mainImage instanceof File) {
+      // ✅ Nouvelle image → upload
       console.log("Nouvelle image principale reçue :", mainImage.name);
       mainImageUrl = await uploadToCloudinary(mainImage);
 
-      // Supprimer l'ancienne image sur Cloudinary
+      // ✅ Supprimer l'ancienne image
       const oldImagePublicId = extractPublicId(ServiceToEdit.image);
       if (oldImagePublicId) {
         await cloudinary.api.delete_resources([oldImagePublicId]);
       }
+    } else if (typeof mainImage === "string") {
+      // ✅ Image déjà hébergée → on garde l’URL telle quelle
+      mainImageUrl = mainImage;
     }
 
     // 📌 Gérer les images multiples (ajoutées/supprimées)
-    let updatedImages = ServiceToEdit.images || [];
-
-    // Supprimer les images retirées par l'utilisateur
-    updatedImages = updatedImages.filter((img) => !removedImages.includes(img));
-
-    // Ajouter les nouvelles images uploadées
-    const newImages = await uploadImages(
-      Array.from(formData.keys())
-        .filter((k) => k.startsWith("images["))
-        .map((k) => formData.get(k))
-        .filter((file) => file instanceof File)
-    );
-    updatedImages = [...updatedImages, ...newImages];
+    const updatedImages = formData.getAll("images[]").filter(Boolean);
 
     // 📌 Mettre à jour la news modifiée
     const updatedService = {
