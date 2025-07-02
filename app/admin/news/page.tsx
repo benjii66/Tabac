@@ -5,6 +5,30 @@ import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 
+async function uploadImageToCloudinary(file: File): Promise<string | null> {
+  const signRes = await fetch("/api/cloudinary/sign");
+  const { timestamp, signature, apiKey, cloudName, folder } =
+    await signRes.json();
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("api_key", apiKey);
+  formData.append("timestamp", timestamp);
+  formData.append("signature", signature);
+  formData.append("folder", folder);
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+
+  const data = await res.json();
+  return data.secure_url;
+}
+
 interface News {
   id: number;
   title: string;
@@ -108,7 +132,7 @@ export default function ManageNews() {
         setProgress(progressValue);
 
         if (progressValue < 100) {
-          setTimeout(updateProgress, 100); // Plus fluide
+          setTimeout(updateProgress, 100);
         }
       };
 
@@ -120,7 +144,7 @@ export default function ManageNews() {
 
     const cancelProgress = simulateProgress();
 
-    // ✅ VÉRIFS DES TAILLES (en dehors du try)
+    // 🔎 Vérif poids
     if (
       newNews.image instanceof File &&
       newNews.image.size > 10 * 1024 * 1024
@@ -147,25 +171,70 @@ export default function ManageNews() {
     }
 
     try {
+      // 🧠 Étape 1 : récupérer signature Cloudinary
+      const signRes = await fetch("/api/cloudinary/sign");
+      const { timestamp, signature, apiKey, cloudName, folder } =
+        await signRes.json();
+
+      // 🖼️ Étape 2 : Uploader image principale
+      let mainImageUrl = "";
+      if (newNews.image instanceof File) {
+        const imageForm = new FormData();
+        imageForm.append("file", newNews.image);
+        imageForm.append("api_key", apiKey);
+        imageForm.append("timestamp", timestamp);
+        imageForm.append("signature", signature);
+        imageForm.append("folder", folder);
+
+        const uploadRes = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          {
+            method: "POST",
+            body: imageForm,
+          }
+        );
+
+        const uploadData = await uploadRes.json();
+        mainImageUrl = uploadData.secure_url;
+      }
+
+      // 🖼️ Étape 3 : Uploader images secondaires
+      const imageUrls = [];
+      for (const img of newNews.images) {
+        if (img instanceof File) {
+          const imageForm = new FormData();
+          imageForm.append("file", img);
+          imageForm.append("api_key", apiKey);
+          imageForm.append("timestamp", timestamp);
+          imageForm.append("signature", signature);
+          imageForm.append("folder", folder);
+
+          const uploadRes = await fetch(
+            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+            {
+              method: "POST",
+              body: imageForm,
+            }
+          );
+
+          const uploadData = await uploadRes.json();
+          imageUrls.push(uploadData.secure_url);
+        }
+      }
+
+      // 📦 Étape 4 : Envoyer le formulaire final
       const formData = new FormData();
       formData.append("title", newNews.title);
       formData.append("description", newNews.description);
       formData.append("details", newNews.details);
       formData.append("date", newNews.date);
+      formData.append("image", mainImageUrl);
 
-      if (newNews.image instanceof File) {
-        formData.append("image", newNews.image);
-      }
-
-      newNews.images.forEach((img, index) => {
-        if (img instanceof File) {
-          formData.append(`images[${index}]`, img);
-        }
+      imageUrls.forEach((url, index) => {
+        formData.append(`images[${index}]`, url);
       });
 
-      const response = await axios.post("/api/news", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.post("/api/news", formData);
 
       cancelProgress();
       setProgress(100);
@@ -176,9 +245,14 @@ export default function ManageNews() {
         resetState();
       }, 1500);
     } catch (error) {
+      console.error("Erreur handleAddNews :", error);
       cancelProgress();
       setProgress(0);
       setIsSubmitting(false);
+      setFormMessage({
+        type: "error",
+        text: "Erreur lors de l’ajout de l’actualité.",
+      });
     }
   };
 
@@ -316,7 +390,6 @@ export default function ManageNews() {
         if (isCancelled) return;
         progressValue += 3;
         setProgress(progressValue);
-
         if (progressValue < 100) {
           setTimeout(updateProgress, 100);
         }
@@ -330,34 +403,6 @@ export default function ManageNews() {
 
     const cancelProgress = simulateProgress();
 
-    // ✅ VALIDATION IMAGE PRINCIPALE (si modifiée)
-    const imageFile = (
-      document.querySelector("#editImageUpload") as HTMLInputElement
-    ).files?.[0];
-
-    if (imageFile && imageFile.size > 10 * 1024 * 1024) {
-      setFormMessage({
-        type: "error",
-        text: "L’image principale dépasse 10 Mo.",
-      });
-      setIsSubmitting(false);
-      cancelProgress();
-      return;
-    }
-
-    // ✅ VALIDATION IMAGES SECONDAIRES
-    for (const img of editingNews.images) {
-      if (img instanceof File && img.size > 10 * 1024 * 1024) {
-        setFormMessage({
-          type: "error",
-          text: "Une des images secondaires dépasse 10 Mo.",
-        });
-        setIsSubmitting(false);
-        cancelProgress();
-        return;
-      }
-    }
-
     try {
       const formData = new FormData();
       formData.append("id", editingNews.id.toString());
@@ -365,21 +410,41 @@ export default function ManageNews() {
       formData.append("description", editingNews.description);
       formData.append("details", editingNews.details);
       formData.append("date", editingNews.date);
-
-      if (imageFile) {
-        formData.append("image", imageFile);
-      }
-
-      editingNews.images.forEach((image, index) => {
-        if (image instanceof File) {
-          formData.append(`images[${index}]`, image);
-        } else if (!removedImages.includes(image as string)) {
-          formData.append(`existingImages[${index}]`, image);
-        }
-      });
-
       formData.append("removedImages", JSON.stringify(removedImages));
 
+      // ✅ Image principale
+      const imageFile = (
+        document.querySelector("#editImageUpload") as HTMLInputElement
+      )?.files?.[0];
+
+      if (imageFile) {
+        if (imageFile.size > 10 * 1024 * 1024) {
+          throw new Error("L’image principale dépasse 10 Mo.");
+        }
+        const uploadedMainUrl = await uploadImageToCloudinary(imageFile);
+        if (uploadedMainUrl) formData.append("image", uploadedMainUrl);
+      } else {
+        formData.append("image", editingNews.image);
+      }
+
+      // ✅ Images secondaires
+      for (const image of editingNews.images) {
+        if (image instanceof File) {
+          if (image.size > 10 * 1024 * 1024) {
+            throw new Error("Une des images secondaires dépasse 10 Mo.");
+          }
+          const uploadedUrl = await uploadImageToCloudinary(image);
+          if (uploadedUrl) {
+            const index = Math.floor(Math.random() * 100000); // juste pour éviter doublons de key
+            formData.append(`images[${index}]`, uploadedUrl);
+          }
+        } else if (!removedImages.includes(image)) {
+          const index = Math.floor(Math.random() * 100000);
+          formData.append(`images[${index}]`, image);
+        }
+      }
+
+      // 🔁 Requête
       const response = await axios.put("/api/news", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -397,7 +462,6 @@ export default function ManageNews() {
           type: "success",
           text: "Modification effectuée avec succès !",
         });
-
         setIsSubmitting(false);
         resetState();
       }, 1500);
@@ -407,7 +471,10 @@ export default function ManageNews() {
       setIsSubmitting(false);
       setFormMessage({
         type: "error",
-        text: "Erreur lors de la modification.",
+        text:
+          error instanceof Error
+            ? error.message
+            : "Erreur lors de la modification.",
       });
     }
   };
