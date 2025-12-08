@@ -47,7 +47,7 @@ export default function RootLayout({
             name: "Tabac Le Soler",
             description: "Votre bureau de tabac de confiance à Le Soler. Retrouvez tous vos services : jeux, lotos, PMU, presse, produits locaux, e-cigarettes, CBD, maroquinerie et prêt-à-porter.",
             url: "https://tabaclesoler.fr/",
-            telephone: "+33 4 68 00 00 00",
+            telephone: "+33 4 68 73 86 59",
             address: {
               "@type": "PostalAddress",
               streetAddress: "46 rue des Orangers",
