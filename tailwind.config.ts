@@ -8,6 +8,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        'tabac-red': '#E30613', // Couleur issue du logo officiel
+        'nordic-bg': '#FAFAFA', // Fond clair
+        'nordic-text': '#111827', // Texte sombre
+      },
       fontFamily: {
         sans: ['Inter', 'sans-serif'], // Police par defaut
         dyslexia: ['OpenDyslexic', 'sans-serif'], // Police pour Dyslexie

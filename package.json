@@ -19,6 +19,7 @@
     "autoprefixer": "10.4.15",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
+    "browser-image-compression": "^2.0.2",
     "cloudinary": "^2.5.1",
     "cookie": "^1.0.2",
     "dotenv": "^16.4.7",

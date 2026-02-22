@@ -66,12 +66,13 @@ export default function ServicesMobile({ services = [], onSelectService }: Props
                 grabCursor={true}
                 centeredSlides={true}
                 slidesPerView="auto"
+                initialSlide={1}
                 coverflowEffect={{
-                    rotate: 30,
-                    stretch: 40,
-                    depth: 120,
-                    modifier: 1,
-                    slideShadows: true,
+                    rotate: 0,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 2.5,
+                    slideShadows: false,
                 }}
                 autoplay={{
                     delay: 3000,
@@ -79,38 +80,38 @@ export default function ServicesMobile({ services = [], onSelectService }: Props
                 }}
                 pagination={{ clickable: true }}
                 modules={[EffectCoverflow, Pagination, Autoplay]}
-                className="w-full py-8"
+                className="w-full py-8 px-2 pb-16"
                 aria-label="Carousel des services disponibles (version mobile)"
             >
                 {services.length > 0 ? (
                     services.map((service) => (
                         <SwiperSlide
                             key={service.id}
-                            className="flex justify-center items-center"
+                            className="group"
                             style={{
-                                width: "85%",
-                                height: "40vh",
+                                width: "280px",
+                                height: "380px",
                             }}
                             onClick={() => onSelectService(service)}
                             role="button"
                             aria-label={`Voir les détails du service : ${service.title}`}
                         >
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                whileHover={{ scale: 1.05 }}
-                                transition={{ duration: 0.5 }}
-                                className="relative w-full h-full rounded-lg overflow-hidden border border-gray-200 shadow-sm"
+                            <div
+                                className="relative w-full h-full rounded-3xl overflow-hidden shadow-lg bg-gray-100"
                             >
-                                <img src={service.image} alt={service.title} className="w-full h-full object-cover" />
+                                <img src={service.image} alt={service.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                
+                                <div className="absolute inset-0 bg-black/10"></div>
+
                                 <div
-                                    className="absolute inset-0 flex flex-col justify-center items-center text-center bg-gradient-to-t from-black/20 to-black/10 text-white p-3"
+                                    className="absolute bottom-3 left-3 right-3 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-md border border-white/50"
                                     aria-hidden="true"
                                 >
-                                    <h3 className="text-md font-bold mb-1">{service.title}</h3>
-                                    <p className="text-xs">{service.description}</p>
+                                    <h3 className="text-lg font-bold mb-1 text-nordic-text">{service.title}</h3>
+                                    <div className="w-6 h-1 bg-tabac-red rounded-full mb-2"></div>
+                                    <p className="text-xs text-gray-500 line-clamp-2">{service.description}</p>
                                 </div>
-                            </motion.div>
+                            </div>
                         </SwiperSlide>
                     ))
                 ) : (
