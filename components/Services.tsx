@@ -121,21 +121,28 @@ export default function Services() {
   };
 
   return (
-    <section className="py-16 bg-stone-100" aria-labelledby="services-title" id="services">
+    <section className="py-24 bg-white" aria-labelledby="services-title" id="services">
       {/* Métadonnées JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
-      <div className="container mx-auto px-4">
-        <h2 id="services-title" className="text-3xl font-bold text-gray-800 mb-4 text-center">
-          Nos Services : Tabac, Presse, Vape Shop et plus encore
-        </h2>
-        <p className="text-gray-600 text-center mb-12">
-          Découvrez tout ce que nous proposons pour répondre à vos besoins quotidiens.
-        </p>
+      <div className="container mx-auto px-6">
+        <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           transition={{ duration: 0.8 }}
+        >
+          <h2 id="services-title" className="text-4xl md:text-5xl font-extrabold text-nordic-text text-center tracking-tight mb-6">
+            Nos <span className="text-tabac-red relative whitespace-nowrap">Services</span>
+          </h2>
+          <p className="text-lg md:text-xl text-gray-500 text-center mb-16 max-w-2xl mx-auto font-light">
+            Découvrez tout ce que nous proposons pour répondre à vos besoins quotidiens, alliant choix et proximité.
+          </p>
+        </motion.div>
 
         {/* 🔄 Ajout d'un message de chargement */}
         {loading ? (
-          <div className="text-center text-gray-500 text-lg">Chargement des services...</div>
+          <div className="text-center text-gray-400 text-lg py-12">Chargement de nos services...</div>
         ) : (
           <>
             {/* Affichage des services pour mobile ou desktop */}
@@ -151,37 +158,61 @@ export default function Services() {
       {/* Modal avec carrousel des images multiples */}
       <AnimatePresence>
         {selectedService && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={() => setSelectedService(null)}>
+          <div className="fixed inset-0 bg-nordic-text/80 backdrop-blur-sm flex justify-center items-center z-50" onClick={() => setSelectedService(null)}>
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full overflow-hidden relative m-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <button onClick={() => setSelectedService(null)} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+              <button 
+                onClick={() => setSelectedService(null)} 
+                className="absolute top-4 right-4 w-10 h-10 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-tabac-red transition-colors z-20 shadow-sm"
+              >
                 ✕
               </button>
 
               {/* Carrousel des images multiples */}
-              <Swiper modules={[Navigation, Pagination]} navigation pagination={{ clickable: true }} spaceBetween={10} slidesPerView={1} className="mb-4">
+              <Swiper 
+                modules={[Navigation, Pagination]} 
+                navigation={{ prevEl: ".services-modal-prev", nextEl: ".services-modal-next" }} 
+                pagination={{ clickable: true }} 
+                spaceBetween={0} 
+                slidesPerView={1} 
+                className="w-full relative pb-10" /* pb-10 pour dégager la place de la pagination */
+              >
                 {selectedService.images && selectedService.images.length > 0 ? (
                   (selectedService.images?.length > 0 ? selectedService.images : [selectedService.image]).map((img, index) => (
                     <SwiperSlide key={index}>
-                      <img src={img} alt={`Image ${index + 1}`} className="w-full h-80 object-cover rounded-lg" />
+                      <img src={img} alt={`Image ${index + 1}`} className="w-full h-64 sm:h-80 object-cover" />
                     </SwiperSlide>
                   ))
                 ) : (
                   <SwiperSlide>
-                    <img src={selectedService.image} alt={`Image principale du service ${selectedService.title}`} className="w-full h-40 object-cover rounded-lg" />
+                    <img src={selectedService.image} alt={`Image principale du service ${selectedService.title}`} className="w-full h-64 sm:h-80 object-cover" />
                   </SwiperSlide>
                 )}
+                {/* Modal Navigation Arrows */}
+                <div className="services-modal-prev w-12 h-12 bg-white/60 backdrop-blur-md rounded-full flex items-center justify-center absolute top-1/2 left-4 transform -translate-y-1/2 z-10 cursor-pointer text-nordic-text hover:text-white hover:bg-tabac-red transition-all duration-300 shadow-md group">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                  </svg>
+                </div>
+                <div className="services-modal-next w-12 h-12 bg-white/60 backdrop-blur-md rounded-full flex items-center justify-center absolute top-1/2 right-4 transform -translate-y-1/2 z-10 cursor-pointer text-nordic-text hover:text-white hover:bg-tabac-red transition-all duration-300 shadow-md group">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                  </svg>
+                </div>
               </Swiper>
 
-              <h3 className="text-xl font-bold mb-2">{selectedService.title}</h3>
-              <p className="text-sm text-gray-600 mb-4">{selectedService.description}</p>
-              <p className="text-sm text-gray-700">{selectedService.details}</p>
+              <div className="p-8">
+                <h3 className="text-3xl font-extrabold text-nordic-text mb-2 tracking-tight">{selectedService.title}</h3>
+                <p className="text-base text-tabac-red font-semibold mb-5">{selectedService.description}</p>
+                <div className="w-12 h-1 bg-gray-200 rounded-full mb-5"></div>
+                <p className="text-base text-gray-600 leading-relaxed font-light">{selectedService.details}</p>
+              </div>
             </motion.div>
           </div>
         )}

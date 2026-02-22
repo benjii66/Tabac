@@ -4,14 +4,29 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import imageCompression from "browser-image-compression";
 
 async function uploadImageToCloudinary(file: File): Promise<string | null> {
   const signRes = await fetch("/api/cloudinary/sign");
   const { timestamp, signature, apiKey, cloudName, folder } =
     await signRes.json();
 
+  // Compression de l'image
+  const options = {
+    maxSizeMB: 1, // Limite la taille maximale à 1MB
+    maxWidthOrHeight: 1440, // Redimensionne l'image pour un web performant
+    useWebWorker: true, // Utilisation des Web Workers pour ne pas bloquer l'UI
+  };
+
+  let fileToUpload = file;
+  try {
+    fileToUpload = await imageCompression(file, options);
+  } catch (error) {
+    console.warn("Erreur lors de la compression de l'image, upload de l'originale :", error);
+  }
+
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append("file", fileToUpload);
   formData.append("api_key", apiKey);
   formData.append("timestamp", timestamp);
   formData.append("signature", signature);
@@ -480,32 +495,36 @@ export default function ManageNews() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-100">
-      <header className="bg-blue-600 text-white py-4 shadow-md flex justify-between items-center px-4">
-        <div>
-          <h1 className="text-2xl font-bold">Gestion des Actualités</h1>
+    <main className="min-h-screen bg-nordic-bg text-nordic-text">
+      {/* Header premium aligné avec le Dashboard */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 py-4 shadow-sm flex flex-col md:flex-row justify-between items-center px-6 lg:px-12 sticky top-0 z-50">
+        <div className="flex items-center gap-3 mb-4 md:mb-0">
+          <div className="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center border border-orange-100 hidden sm:flex">
+             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" /></svg>
+          </div>
+          <h1 className="text-xl md:text-2xl font-extrabold tracking-tight text-gray-900">
+             Gestion des <span className="text-orange-600">Nouveautés</span>
+          </h1>
         </div>
-        <div className="flex gap-4">
-          {/* Bouton pour revenir au dashboard */}
+        <div className="flex gap-3 w-full md:w-auto justify-center md:justify-end">
           <button
-            onClick={() => (window.location.href = "/admin")} // Remplacez "/admin" par l'URL de votre dashboard
-            className="bg-gray-200 text-blue-600 px-4 py-2 rounded hover:bg-gray-300"
+            onClick={() => (window.location.href = "/admin")}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2 rounded-full transition-colors text-sm border border-gray-200 flex items-center gap-2"
           >
             Dashboard
           </button>
-          {/* Bouton pour revenir au site frontend */}
           <button
-            onClick={() => (window.location.href = "/")} // Remplacez "/" par l'URL de votre frontend
-            className="bg-gray-200 text-blue-600 px-4 py-2 rounded hover:bg-gray-300"
+            onClick={() => (window.location.href = "/")}
+            className="bg-tabac-red hover:bg-[#c20510] text-white font-medium px-4 py-2 rounded-full transition-all shadow-md shadow-tabac-red/20 text-sm flex items-center gap-2"
           >
-            Accueil
+            Site web
           </button>
         </div>
       </header>
-      <div className="container mx-auto py-8 px-4">
-        <section className="bg-white p-6 rounded-lg shadow-md">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Liste des Actualités</h2>
+      <div className="container mx-auto py-8 px-4 max-w-7xl">
+        <section className="bg-white p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <h2 className="text-xl font-bold text-gray-900">Liste des Nouveautés</h2>
             <button
               onClick={() =>
                 setNewNews({
@@ -518,98 +537,81 @@ export default function ManageNews() {
                   details: "",
                 })
               }
-              className="bg-green-500 text-white px-4 py-2 rounded"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-medium transition-colors shadow-md shadow-blue-600/20 flex items-center gap-2"
             >
-              Ajouter une Actualité
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              Ajouter une Nouveauté
             </button>
           </div>
 
           {loading ? (
-            <p>Chargement...</p>
+             <div className="flex justify-center items-center py-12">
+                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-tabac-red"></div>
+             </div>
           ) : (
-            <table className="table-auto w-full border-collapse border border-gray-200">
-              <thead>
-                <tr>
-                  <th className="border border-gray-300 px-4 py-2">Images</th>
-                  <th className="border border-gray-300 px-4 py-2">
-                    Images Description
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2">Titre</th>
-                  <th className="border border-gray-300 px-4 py-2">
-                    Description
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2">Détails</th>
-                  <th className="border border-gray-300 px-4 py-2">Date</th>
-                  <th className="border border-gray-300 px-4 py-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {news.map((item) => (
-                  <tr key={item.id}>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {/* Image principale */}
+                  <div 
+                    key={item.id} 
+                    onClick={() => setEditingNews(item)}
+                    className="cursor-pointer bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col relative group"
+                  >
+                    
+                    {/* Image principale (Grande) */}
+                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-5 bg-gray-50 border border-gray-100 shadow-inner">
                       <Image
                         src={
                           typeof item.image === "string"
                             ? item.image
                             : URL.createObjectURL(item.image)
                         }
-                        width={128} // équivalent à w-32 (32 * 4)
-                        height={128} // idem pour h-32
+                        fill
                         alt={item.title}
-                        className="w-32 h-32 object-cover rounded mb-2"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {/* Images multiples */}
-                      <div className="grid grid-cols-3 gap-1">
-                        {item.images &&
-                          item.images.map((img, index) => (
-                            <Image
-                              key={index}
-                              src={
-                                img instanceof File
-                                  ? URL.createObjectURL(img)
-                                  : img
-                              }
-                              width={48} // équivalent à w-32 (32 * 4)
-                              height={48} // idem pour h-32
-                              alt={`Image ${index + 1}`}
-                              className="w-12 h-12 object-cover rounded"
-                            />
-                          ))}
+                      
+                      {/* Badge Nombre de photos secondaires */}
+                      {item.images && item.images.length > 0 && (
+                        <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-md">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                          +{item.images.length}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Contenu */}
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start gap-2 mb-2">
+                        <h3 className="text-xl font-bold text-gray-900 truncate">{item.title}</h3>
+                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md shrink-0">
+                          {new Date(item.date).toLocaleDateString('fr-FR')}
+                        </span>
                       </div>
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {item.title}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {item.description}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {item.details}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {item.date}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                      <p className="text-sm text-gray-500 line-clamp-3 mb-4 leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+
+                    {/* Actions collées en bas */}
+                    <div className="flex items-center gap-3 pt-5 border-t border-gray-100 mt-auto">
                       <button
-                        onClick={() => setEditingNews(item)}
-                        className="bg-yellow-500 px-4 py-2 rounded text-white mb-1"
+                        onClick={(e) => { e.stopPropagation(); setEditingNews(item); }}
+                        className="flex-1 justify-center text-blue-600 hover:text-white bg-blue-50 hover:bg-blue-600 px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2 font-semibold text-sm shadow-sm"
                       >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
                         Modifier
                       </button>
                       <button
-                        onClick={() => confirmDelete(item)}
-                        className="bg-red-500 px-4 py-2 rounded text-white"
+                        onClick={(e) => { e.stopPropagation(); confirmDelete(item); }}
+                        className="flex-none justify-center text-red-500 hover:text-white bg-red-50 hover:bg-red-500 p-2.5 rounded-xl transition-all duration-300 flex items-center shadow-sm"
+                        title="Supprimer"
                       >
-                        Supprimer
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                       </button>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
           )}
         </section>
       </div>
@@ -623,8 +625,8 @@ export default function ManageNews() {
             exit={{ opacity: 0, scale: 0.9 }}
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4"
           >
-            <div className="bg-white rounded-lg p-6 relative max-w-md w-full max-h-[90vh] overflow-y-auto">
-              <h3 className="text-xl font-bold mb-4">Ajouter une Actualité</h3>
+            <div className="bg-white rounded-3xl p-8 relative max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+              <h3 className="text-2xl font-bold mb-6 text-gray-900">Ajouter une Actualité</h3>
 
               {/* Affichage des erreurs */}
               {formMessage && (
@@ -640,127 +642,161 @@ export default function ManageNews() {
                 </motion.div>
               )}
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">Titre</label>
-                <textarea
-                  value={newNews?.title || ""} // Assure une valeur par défaut
+              <div className="mb-5">
+                <label className="block text-sm font-bold text-gray-700 mb-2">Titre</label>
+                <input
+                  type="text"
+                  value={newNews?.title || ""}
                   onChange={(e) =>
                     setNewNews((prev) =>
                       prev ? { ...prev, title: e.target.value } : null
                     )
                   }
-                  className="w-full px-3 py-2 border rounded"
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-tabac-red focus:border-transparent px-4 py-3 outline-none transition-all"
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">
+              <div className="mb-5">
+                <label className="block text-sm font-bold text-gray-700 mb-2">
                   Description
                 </label>
                 <textarea
-                  value={newNews.description}
+                  value={newNews.description || ""}
                   onChange={(e) =>
-                    setNewNews({ ...newNews, description: e.target.value })
+                    setNewNews((prev) =>
+                      prev ? { ...prev, description: e.target.value } : null
+                    )
                   }
-                  className="w-full px-3 py-2 border rounded"
+                  rows={2}
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-tabac-red focus:border-transparent px-4 py-3 outline-none transition-all resize-none"
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">Détails</label>
+              <div className="mb-5">
+                <label className="block text-sm font-bold text-gray-700 mb-2">Détails</label>
                 <textarea
-                  value={newNews.details}
+                  value={newNews.details || ""}
                   onChange={(e) =>
-                    setNewNews({ ...newNews, details: e.target.value })
+                    setNewNews((prev) =>
+                      prev ? { ...prev, details: e.target.value } : null
+                    )
                   }
-                  className="w-full px-3 py-2 border rounded"
+                  rows={4}
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-tabac-red focus:border-transparent px-4 py-3 outline-none transition-all resize-none"
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">Date</label>
+              <div className="mb-5">
+                <label className="block text-sm font-bold text-gray-700 mb-2">Date</label>
                 <input
                   type="date"
-                  value={newNews.date}
+                  value={newNews.date || ""}
                   onChange={(e) =>
-                    setNewNews({ ...newNews, date: e.target.value })
+                    setNewNews((prev) =>
+                      prev ? { ...prev, date: e.target.value } : null
+                    )
                   }
-                  className="w-full px-3 py-2 border rounded"
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-tabac-red focus:border-transparent px-4 py-3 outline-none transition-all"
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">Image</label>
+              <div className="mb-5 relative z-10">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Image Principale</label>
+
+                <div className="relative group rounded-2xl overflow-hidden mt-2 border border-gray-200 shadow-sm bg-gray-50">
+                  <Image
+                    src={
+                      previewImage ||
+                      (editingNews?.image instanceof File
+                        ? URL.createObjectURL(editingNews.image)
+                        : editingNews?.image) ||
+                      "/assets/images/placeholder.svg"
+                    }
+                    alt="Preview"
+                    width={400}
+                    height={300}
+                    className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  {/* Overlay au survol */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
+                      <label htmlFor="newImageUpload" className="cursor-pointer bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-medium backdrop-blur-md flex items-center gap-2 transition-colors shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                        Modifier l'image
+                      </label>
+                  </div>
+                </div>
 
                 <input
                   type="file"
                   id="newImageUpload"
+                  accept="image/*"
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
                       const file = e.target.files[0];
                       setPreviewImage(URL.createObjectURL(file));
                       setNewNews((prev) =>
                         prev ? { ...prev, image: file } : null
-                      ); // Met à jour newNews
+                      );
                     }
                   }}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
-
-                <Image
-                  src={
-                    previewImage ||
-                    (editingNews?.image instanceof File
-                      ? URL.createObjectURL(editingNews.image)
-                      : editingNews?.image) ||
-                    "/assets/images/placeholder.svg"
-                  }
-                  width={128}
-                  height={128}
-                  alt="Preview"
-                  className="w-full h-40 object-cover rounded mt-4"
+                  className="hidden"
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">
-                  Images Multiples
-                </label>
+              <div className="mb-6 relative z-10">
+                <div className="flex justify-between items-end mb-3">
+                  <label className="block text-sm font-semibold text-gray-700">Galerie (Images supplémentaires)</label>
+                  <label htmlFor="newImagesUpload" className="cursor-pointer text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                      Ajouter
+                  </label>
+                </div>
 
                 <input
                   type="file"
                   id="newImagesUpload"
                   multiple
+                  accept="image/*"
                   onChange={handleAddMultipleImages}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className="hidden"
                 />
 
-                <div className="grid grid-cols-3 gap-4 mt-4">
-                  {previewImagesMultiple.map((image, index) => (
-                    <div key={index} className="relative w-20 h-20">
-                      <Image
-                        src={image}
-                        alt={`Image multiple ${index + 1}`}
-                        width={128} // équivalent à w-32 (32 * 4)
-                        height={128} // idem pour h-32
-                        className="w-full h-full object-cover rounded"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveMultipleImage(index)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                {previewImagesMultiple.length > 0 ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-2">
+                    {previewImagesMultiple.map((image, index) => (
+                      <div key={index} className="relative aspect-square group rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-gray-50">
+                        <Image
+                          src={image}
+                          alt={`Image multiple ${index + 1}`}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        {/* Overlay poubelle au hover */}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveMultipleImage(index)}
+                              className="bg-red-500 hover:bg-red-600 text-white rounded-full p-2.5 transform scale-75 group-hover:scale-100 transition-transform shadow-lg"
+                              title="Supprimer la photo"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                            </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="w-full border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-gray-400 bg-gray-50/50 mt-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 mb-2"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                      <span className="text-sm">Aucune image supplémentaire</span>
+                  </div>
+                )}
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
                 <button
                   onClick={resetState}
-                  className="bg-gray-500 text-white px-4 py-2 rounded"
+                  className="px-6 py-2.5 rounded-xl font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 transition-colors"
                 >
                   Annuler
                 </button>
@@ -768,35 +804,23 @@ export default function ManageNews() {
                 <button
                   onClick={handleAddNews}
                   disabled={isSubmitting}
-                  className="relative px-4 py-2 rounded w-32 overflow-hidden text-white transition-colors"
-                  style={{
-                    backgroundColor: `rgb(
-                                        ${
-                                          160 - (progress / 100) * (160 - 34)
-                                        },  /* De 160 (gris) à 34 (vert) */
-                                        ${
-                                          160 + (progress / 100) * (180 - 160)
-                                        }, /* De 160 (gris) à 180 (vert) */
-                                        ${
-                                          160 - (progress / 100) * (160 - 34)
-                                        })` /* De 160 (gris) à 34 (vert) */,
-                  }}
+                  className="px-6 py-2.5 rounded-xl font-semibold text-white bg-tabac-red hover:bg-red-700 transition-all shadow-lg shadow-red-500/30 w-44 relative overflow-hidden flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {/* Texte dynamique */}
+                  <span className="relative z-10 w-full text-center">
                   {isSubmitting
                     ? progress === 100
                       ? "Actualité ajoutée !"
-                      : "Ajout en cours..."
+                      : "Ajout..."
                     : "Ajouter"}
+                  </span>
 
-                  {/* Barre de progression bien synchronisée */}
                   {isSubmitting && (
                     <motion.div
                       initial={{ width: "0%" }}
                       animate={{ width: `${progress}%` }}
                       transition={{ duration: 2, ease: "easeInOut" }}
                       style={{ width: `${progress}%` }}
-                      className="absolute bottom-0 left-0 h-1 bg-green-700"
+                      className="absolute bottom-0 left-0 h-full bg-white/20"
                     />
                   )}
                 </button>
@@ -814,76 +838,104 @@ export default function ManageNews() {
             exit={{ opacity: 0, scale: 0.9 }}
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4"
           >
-            <div className="bg-white rounded-lg p-6 relative max-w-md w-full max-h-[90vh] overflow-y-auto">
-              <h3 className="text-xl font-bold mb-4">Modifier une Actualité</h3>
+            <div className="bg-white rounded-3xl p-8 relative max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+              <h3 className="text-2xl font-bold mb-6 text-gray-900">Modifier une Actualité</h3>
 
               {/* Affichage des erreurs */}
               {formMessage && (
-                <div
-                  className={`fixed bottom-4 right-4 z-50 p-4 rounded shadow-md ${
-                    formMessage.type === "success"
-                      ? "bg-green-500 text-white"
-                      : "bg-red-500 text-white"
-                  }`}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.5 }}
+                  className={`fixed bottom-4 right-4 z-50 p-3 rounded shadow-md text-white 
+        ${formMessage.type === "success" ? "bg-green-500" : "bg-red-500"}`}
                 >
                   {formMessage.text}
-                </div>
+                </motion.div>
               )}
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">Titre</label>
-                <textarea
-                  value={editingNews.title}
+              <div className="mb-5">
+                <label className="block text-sm font-bold text-gray-700 mb-2">Titre</label>
+                <input
+                  type="text"
+                  value={editingNews.title || ""}
                   onChange={(e) =>
                     setEditingNews({ ...editingNews, title: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded"
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-tabac-red focus:border-transparent px-4 py-3 outline-none transition-all"
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">
+              <div className="mb-5">
+                <label className="block text-sm font-bold text-gray-700 mb-2">
                   Description
                 </label>
                 <textarea
-                  value={editingNews.description}
+                  value={editingNews.description || ""}
                   onChange={(e) =>
                     setEditingNews({
                       ...editingNews,
                       description: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 border rounded"
+                  rows={2}
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-tabac-red focus:border-transparent px-4 py-3 outline-none transition-all resize-none"
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">Détails</label>
+              <div className="mb-5">
+                <label className="block text-sm font-bold text-gray-700 mb-2">Détails</label>
                 <textarea
-                  value={editingNews.details}
+                  value={editingNews.details || ""}
                   onChange={(e) =>
                     setEditingNews({ ...editingNews, details: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded"
+                  rows={4}
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-tabac-red focus:border-transparent px-4 py-3 outline-none transition-all resize-none"
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">Date</label>
+              <div className="mb-5">
+                <label className="block text-sm font-bold text-gray-700 mb-2">Date</label>
                 <input
                   type="date"
-                  value={editingNews.date}
+                  value={editingNews.date || ""}
                   onChange={(e) =>
                     setEditingNews({ ...editingNews, date: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded"
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-tabac-red focus:border-transparent px-4 py-3 outline-none transition-all"
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">
+              <div className="mb-5 relative z-10">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Image Principale
                 </label>
+
+                <div className="relative group rounded-2xl overflow-hidden mt-2 border border-gray-200 shadow-sm bg-gray-50">
+                  <Image
+                    src={
+                      previewImage ||
+                      (editingNews?.image instanceof File
+                        ? URL.createObjectURL(editingNews.image)
+                        : editingNews?.image) ||
+                      "/assets/images/placeholder.svg"
+                    }
+                    width={400}
+                    height={300}
+                    alt="Preview"
+                    className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  {/* Overlay au survol */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
+                      <label htmlFor="editImageUpload" className="cursor-pointer bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-medium backdrop-blur-md flex items-center gap-2 transition-colors shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                        Modifier l'image
+                      </label>
+                  </div>
+                </div>
+
                 <input
                   type="file"
                   id="editImageUpload"
@@ -894,27 +946,21 @@ export default function ManageNews() {
                       setEditingNews({ ...editingNews, image: file });
                     }
                   }}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
-                <Image
-                  src={
-                    previewImage ||
-                    (editingNews?.image instanceof File
-                      ? URL.createObjectURL(editingNews.image)
-                      : editingNews?.image) ||
-                    "/assets/images/placeholder.svg"
-                  }
-                  width={128} // équivalent à w-32 (32 * 4)
-                  height={128} // idem pour h-32
-                  alt="Preview"
-                  className="w-full h-40 object-cover rounded mt-4"
+                  className="hidden"
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">
-                  Images Multiples
-                </label>
+              <div className="mb-6 relative z-10">
+                <div className="flex justify-between items-end mb-3">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Galerie (Images supplémentaires)
+                  </label>
+                  <label htmlFor="editMultipleImagesUpload" className="cursor-pointer text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                      Ajouter
+                  </label>
+                </div>
+
                 <input
                   type="file"
                   id="editMultipleImagesUpload"
@@ -931,11 +977,7 @@ export default function ManageNews() {
                         ...previews,
                       ]);
                       setEditingNews((prev) => {
-                        if (!prev || !prev.id) {
-                          console.error("Actualité non valide ou id manquant.");
-                          return null;
-                        }
-
+                        if (!prev || !prev.id) return null;
                         return {
                           ...prev,
                           images: [...(prev.images || []), ...files],
@@ -943,39 +985,48 @@ export default function ManageNews() {
                       });
                     }
                   }}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className="hidden"
                 />
 
-                <div className="grid grid-cols-3 gap-4 mt-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-2">
                   {editingNews?.images.map((image, index) => (
-                    <div key={index} className="relative w-20 h-20">
+                    <div key={index} className="relative aspect-square group rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-gray-50">
                       <Image
                         src={
                           image instanceof File
                             ? URL.createObjectURL(image)
                             : image
                         }
-                        width={128} // équivalent à w-32 (32 * 4)
-                        height={128} // idem pour h-32
+                        fill
                         alt={`Image multiple ${index + 1}`}
-                        className="w-full h-full object-cover rounded"
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
                       />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveMultipleImage(index)} // Appel ici
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
-                      >
-                        &times;
-                      </button>
+                      {/* Overlay poubelle au hover */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveMultipleImage(index)}
+                            className="bg-red-500 hover:bg-red-600 text-white rounded-full p-2.5 transform scale-75 group-hover:scale-100 transition-transform shadow-lg"
+                            title="Supprimer la photo"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                          </button>
+                      </div>
                     </div>
                   ))}
+                  {(!editingNews?.images || editingNews.images.length === 0) && (
+                    <div className="col-span-full border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-gray-400 bg-gray-50/50 mt-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 mb-2"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                        <span className="text-sm">Aucune image supplémentaire</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
                 <button
                   onClick={resetState}
-                  className="bg-gray-500 text-white px-4 py-2 rounded"
+                  className="px-6 py-2.5 rounded-xl font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 transition-colors"
                 >
                   Annuler
                 </button>
@@ -983,32 +1034,23 @@ export default function ManageNews() {
                 <button
                   onClick={handleSave}
                   disabled={isSubmitting}
-                  className="relative px-4 py-2 rounded w-32 overflow-hidden text-white transition-colors"
-                  style={{
-                    backgroundColor: `rgb(
-            ${
-              160 - (progress / 100) * (160 - 34)
-            },  /* De 160 (gris) à 34 (bleu) */
-            ${
-              160 + (progress / 100) * (150 - 160)
-            }, /* De 160 (gris) à 150 (bleu) */
-            ${
-              160 + (progress / 100) * (220 - 160)
-            })` /* De 160 (gris) à 220 (bleu) */,
-                  }}
+                  className="px-6 py-2.5 rounded-xl font-semibold text-white bg-tabac-red hover:bg-red-700 transition-all shadow-lg shadow-red-500/30 w-52 relative overflow-hidden flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
+                  <span className="relative z-10 w-full text-center">
                   {isSubmitting
                     ? progress === 100
                       ? "Modification réussie !"
                       : "Sauvegarde en cours..."
                     : "Sauvegarder"}
-
+                  </span>
+                  
                   {isSubmitting && (
                     <motion.div
                       initial={{ width: "0%" }}
                       animate={{ width: `${progress}%` }}
                       transition={{ duration: 2, ease: "easeInOut" }}
-                      className="absolute bottom-0 left-0 h-1 bg-blue-700"
+                      style={{ width: `${progress}%` }}
+                      className="absolute bottom-0 left-0 h-full bg-white/20"
                     />
                   )}
                 </button>

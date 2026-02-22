@@ -23,8 +23,8 @@ export default function MapSection() {
   };
 
   return (
-    <section className="py-16 bg-white" aria-labelledby="map-title">
-      <div className="container mx-auto px-4">
+    <section className="py-20 sm:py-28 bg-white" aria-labelledby="map-title">
+      <div className="container mx-auto px-6 max-w-6xl">
         {/* Données structurées pour le SEO */}
         <script
           type="application/ld+json"
@@ -33,19 +33,17 @@ export default function MapSection() {
 
         {/* Titre et adresse */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+           initial={{ opacity: 0, y: 20 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2
-            id="map-title"
-            className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4"
-          >
-            Nous Trouver
+          <h2 id="map-title" className="text-4xl md:text-5xl font-extrabold text-nordic-text text-center tracking-tight mb-4">
+            Nous <span className="text-tabac-red relative whitespace-nowrap">Trouver</span>
           </h2>
           <p
-            className="text-gray-600 text-sm sm:text-base"
+            className="text-gray-500 text-lg md:text-xl font-light"
             aria-label="Adresse du Tabac Presse Le Soler"
           >
             46 rue des Orangers, 66270 Le Soler
@@ -53,39 +51,49 @@ export default function MapSection() {
         </motion.div>
 
         {/* Carte Google Maps */}
-        <div
-          className="rounded-lg overflow-hidden shadow-lg"
+        <motion.div
+           initial={{ opacity: 0, scale: 0.95 }}
+           whileInView={{ opacity: 1, scale: 1 }}
+           viewport={{ once: true }}
+           transition={{ duration: 0.8, delay: 0.2 }}
+          className="rounded-3xl overflow-hidden shadow-sm border border-gray-100"
           aria-label="Carte pour localiser le Tabac Presse Le Soler"
         >
           <iframe
             title="Localisation de Tabac Presse Le Soler sur Google Maps"
-            className="w-full h-[300px] sm:h-[400px] md:h-[600px]"
+            className="w-full h-[400px] md:h-[500px]"
             src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=fr&amp;q=46,%20rue%20des%20orangers%20Le%20Soler+(Tabac%20Presse%20Le%20Soler)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
             loading="lazy"
             allowFullScreen
           ></iframe>
-        </div>
+        </motion.div>
       </div>
 
       {/* Section contact */}
-      <div className="text-center pt-10">
+      <motion.div 
+         initial={{ opacity: 0, y: 20 }}
+         whileInView={{ opacity: 1, y: 0 }}
+         viewport={{ once: true }}
+         transition={{ duration: 0.8, delay: 0.4 }}
+         className="text-center mt-16"
+      >
         <h2
-          className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4"
+          className="text-2xl sm:text-3xl font-bold text-nordic-text mb-4"
           aria-label="Contact"
         >
           Nous Contacter
         </h2>
-        <p className="text-gray-600 text-sm sm:text-base">
-          Téléphone :{' '}
+        <p className="text-gray-500 text-lg">
+          Par téléphone :{' '}
           <a
             href="tel:+33468738659"
-            className="text-blue-600 hover:underline"
+            className="text-tabac-red font-medium hover:underline transition-colors"
             aria-label="Numéro de téléphone du Tabac Presse Le Soler"
           >
             04 68 73 86 59
           </a>
         </p>
-      </div>
+      </motion.div>
     </section>
   );
 }
