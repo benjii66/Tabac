@@ -11,7 +11,7 @@ export default function Footer() {
                         <h2 className="text-2xl font-bold mb-2">Tabac Presse Le Soler</h2>
                         <div className="w-12 h-1 bg-tabac-red rounded-full mb-4 mx-auto md:mx-0"></div>
                         <p className="text-sm text-gray-400 leading-relaxed">
-                            L'essentiel au quotidien.<br/>Le choix et la proximité, c’est ici.
+                            L&apos;essentiel au quotidien.<br/>Le choix et la proximité, c&rsquo;est ici.
                         </p>
                     </div>
 

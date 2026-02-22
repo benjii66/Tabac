@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
+const slogans = [
+  "L'essentiel au quotidien.",
+  "Vos magazines préférés.",
+  "La chance au tirage.",
+  "Vos services à proximité."
+];
+
 export default function Hero() {
-  const slogans = [
-    "L'essentiel au quotidien.",
-    "Vos magazines préférés.",
-    "La chance au tirage.",
-    "Vos services à proximité."
-  ];
 
   const [displayText, setDisplayText] = useState('');
   const [sloganIndex, setSloganIndex] = useState(0);

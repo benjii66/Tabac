@@ -45,29 +45,29 @@ export default function NewsSection() {
     return cld.image(formattedImageName).resize(fill().width(500).height(400)).toURL();
   };
 
-  const fetchNews = async () => {
-    try {
-      const timestamp = new Date().getTime(); // 🔥 Ajoute un timestamp unique
-      const response = await axios.get(`${CLOUDINARY_JSON_URL}?invalidate=true&nocache=${timestamp}`);
-
-      if (Array.isArray(response.data)) {
-        const formattedNews = response.data.map((newsItem: NewsItem) => ({
-          ...newsItem,
-          image: getCloudinaryImageUrl(newsItem.image),
-          images: newsItem.images?.map((img) => getCloudinaryImageUrl(img)),
-        }));
-
-        console.log("✅ News après transformation :", formattedNews);
-        setNews(formattedNews);
-      } else {
-        console.error("❌ Les données récupérées ne sont pas un tableau :", response.data);
-      }
-    } catch (error) {
-      console.error("❌ Erreur lors de la récupération des nouveautés :", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const timestamp = new Date().getTime(); // 🔥 Ajoute un timestamp unique
+        const response = await axios.get(`${CLOUDINARY_JSON_URL}?invalidate=true&nocache=${timestamp}`);
+
+        if (Array.isArray(response.data)) {
+          const formattedNews = response.data.map((newsItem: NewsItem) => ({
+            ...newsItem,
+            image: getCloudinaryImageUrl(newsItem.image),
+            images: newsItem.images?.map((img) => getCloudinaryImageUrl(img)),
+          }));
+
+          console.log("✅ News après transformation :", formattedNews);
+          setNews(formattedNews);
+        } else {
+          console.error("❌ Les données récupérées ne sont pas un tableau :", response.data);
+        }
+      } catch (error) {
+        console.error("❌ Erreur lors de la récupération des nouveautés :", error);
+      }
+    };
+
     fetchNews();
   }, []);
 

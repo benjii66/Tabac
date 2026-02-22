@@ -721,7 +721,7 @@ export default function ManageNews() {
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
                       <label htmlFor="newImageUpload" className="cursor-pointer bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-medium backdrop-blur-md flex items-center gap-2 transition-colors shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
-                        Modifier l'image
+                        Modifier l&apos;image
                       </label>
                   </div>
                 </div>
@@ -931,7 +931,7 @@ export default function ManageNews() {
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
                       <label htmlFor="editImageUpload" className="cursor-pointer bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-medium backdrop-blur-md flex items-center gap-2 transition-colors shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
-                        Modifier l'image
+                        Modifier l&apos;image
                       </label>
                   </div>
                 </div>

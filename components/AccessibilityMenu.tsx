@@ -61,8 +61,8 @@ export default function AccessibilityMenu() {
                             <button
                                 onClick={() => toggleOption('dyslexia')}
                                 className={`w-full text-left p-3 rounded transition ${accessibilityOptions.dyslexia ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'}`}
-                                aria-pressed={accessibilityOptions.dyslexia}
-                                role="menuitem"
+                                aria-checked={accessibilityOptions.dyslexia}
+                                role="menuitemcheckbox"
                             >
                                 {accessibilityOptions.dyslexia
                                     ? 'Désactiver la police Dyslexie'
@@ -73,8 +73,8 @@ export default function AccessibilityMenu() {
                             <button
                                 onClick={() => toggleOption('highContrast')}
                                 className={`w-full text-left p-3 rounded transition ${accessibilityOptions.highContrast ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'}`}
-                                aria-pressed={accessibilityOptions.highContrast}
-                                role="menuitem"
+                                aria-checked={accessibilityOptions.highContrast}
+                                role="menuitemcheckbox"
                             >
                                 {accessibilityOptions.highContrast
                                     ? 'Désactiver le Contraste élevé'
@@ -85,8 +85,8 @@ export default function AccessibilityMenu() {
                             <button
                                 onClick={() => toggleOption('nightMode')}
                                 className={`w-full text-left p-3 rounded transition ${accessibilityOptions.nightMode ? 'bg-white text-blue-400' : 'bg-gray-800 hover:bg-gray-700 text-white'}`}
-                                aria-pressed={accessibilityOptions.nightMode}
-                                role="menuitem"
+                                aria-checked={accessibilityOptions.nightMode}
+                                role="menuitemcheckbox"
                             >
                                 {accessibilityOptions.nightMode
                                     ? 'Désactiver le Mode Nuit'
