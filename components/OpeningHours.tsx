@@ -73,7 +73,7 @@ export default function OpeningHours() {
               <FaClock className="text-tabac-red text-2xl" aria-hidden="true" />
             </div>
             <h2 id="opening-hours-title" className="text-3xl sm:text-4xl font-extrabold text-nordic-text text-center tracking-tight">
-              Horaires d'ouverture
+              Horaires d&apos;ouverture
             </h2>
           </div>
 
