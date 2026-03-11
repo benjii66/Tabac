@@ -7,7 +7,7 @@ import Image from 'next/image';
 const slogans = [
   "L'essentiel au quotidien.",
   "Vos magazines préférés.",
-  "La chance au tirage.",
+  "La chance au grattage et au tirage.",
   "Vos services à proximité."
 ];
 
