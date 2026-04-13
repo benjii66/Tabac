@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div align="center">
+  <img src="public/assets/logo/logow.jpg" alt="Tabac Presse Le Soler Logo" width="200" />
+  <h1>Tabac Presse - Le Soler</h1>
+  <p>Une solution moderne et accessible pour la gestion d'un commerce de proximité.</p>
 
-## Getting Started
+  <p>
+    <img src="https://img.shields.io/badge/Next.js-14-black?logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/Tailwind-CSS-blue?logo=tailwind-css" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/TypeScript-Ready-blue?logo=typescript" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel" alt="Vercel" />
+  </p>
+</div>
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun run dev
-```
+## 🌟 Présentation
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ce projet est une application web complète dédiée au **Tabac Presse Le Soler**. Elle permet aux clients de consulter les services disponibles, les dernières actualités du commerce, ainsi que les horaires d'ouverture en temps réel. L'application intègre également un espace d'administration sécurisé pour une gestion simplifiée au quotidien.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Fonctionnalités Clés
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 💻 Espace Client
+- **Hero Section Dynamique** : Effet typewriter pour un accueil moderne.
+- **Gestion des News** : Restez informé des arrivages et des services (PMU, FDJ, Nickel, etc.).
+- **Carte Interactive** : Localisation précise via Leaflet/Google Maps integration.
+- **Menu d'Accessibilité** : Personnalisation de l'affichage (Mode sombre, contraste, taille de police).
+- **Services Dédiés** : Présentation optimisée pour mobile et desktop.
 
-## Learn More
+### 🔐 Espace Administration
+- **Dashboard de Gestion** : Interface complète pour modifier les contenus du site.
+- **Gestion des Horaires** : Mise à jour instantanée des créneaux d'ouverture.
+- **Publication de News** : Système de publication d'articles simple et efficace.
+- **Gestion des Services** : Contrôle total sur la liste des prestations proposées.
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Framework** : [Next.js 14 (App Router)](https://nextjs.org/)
+- **Styling** : [Tailwind CSS](https://tailwindcss.com/)
+- **Langage** : [TypeScript](https://www.typescriptlang.org/)
+- **Composants UI** : Framer Motion (Animations), Lucide React (Icons).
+- **Déploiement** : [Vercel](https://vercel.com/)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## ⚙️ Installation et Configuration
 
-## Deploy on Vercel
+Pour lancer le projet localement :
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Cloner le projet**
+   ```bash
+   git clone https://github.com/benjii66/Tabac.git
+   cd Tabac
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+2. **Installer les dépendances**
+   ```bash
+   npm install
+   ```
+
+3. **Configurer les variables d'environnement**
+   Créez un fichier `.env` à la racine du projet et ajoutez vos clés (ex: Base de données, API de news, etc.).
+   
+   > [!IMPORTANT]
+   > Ne poussez jamais votre fichier `.env` sur le dépôt distant ! (Il est déjà ajouté au `.gitignore`).
+
+4. **Lancer le serveur de développement**
+   ```bash
+   npm run dev
+   ```
+   Rendez-vous sur [http://localhost:3000](http://localhost:3000).
+
+---
+
+<p align="center">Conçu avec ❤️ pour le Tabac Presse Le Soler.</p>
